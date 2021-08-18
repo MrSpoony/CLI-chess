@@ -5,6 +5,28 @@ from knight import Knight
 from pawn import Pawn
 from rook import Rook
 
+
+moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its True
+
+
+
+
+
+
+
+def printBoard(chessboard):
+    print("\n"*4)
+    for i in range(len(chessboard)):
+        print("\n", end="", flush=True)
+        for j in range(len(chessboard[i])):
+            if chessboard[i][j] != " ":
+                print(chessboard[i][j].char, end="", flush=True)
+            else:
+                print(" ", end="", flush=True)
+
+
+
+
 def createBoard():
     '''
     Creates a new clean Board
@@ -34,7 +56,7 @@ def createWhiteSide():
     chessboard[7][0] = Rook(0, 7)
     chessboard[7][1] = Knight(1, 7)
     chessboard[7][2] = Bishop(2, 7)
-    chessboard[7][3] = Queen(3, 7)
+    chessboard[3][3] = Queen(3, 3)
     chessboard[7][4] = King(4, 7)
     chessboard[7][5] = Knight(5, 7)
     chessboard[7][6] = Bishop(6, 7)
@@ -62,3 +84,59 @@ def createBlackSide():
     chessboard[0][7] = Rook(7, 7)
     return chessboard
 
+def mergeBoards(chessboard):
+    '''
+    merges array of boards to one board and returns that
+    
+    '''
+    newBoard = createBoard()
+    for i in range(len(chessboard[0])):
+        for j in range(len(chessboard[0][i])):
+            if chessboard[0][i][j] != " ":
+                newBoard[i][j] = chessboard[0][i][j]
+            elif chessboard[1][i][j] != " ":
+                newBoard[i][j] = chessboard[1][i][j]
+    return newBoard
+
+def isValidInput(userInput):
+    '''
+    checks if the userInput is a valid Input or not
+    
+    '''
+    if len(userInput) != 4:
+        return False
+    if not(ord(userInput[0]) <= 104 and ord(userInput[0]) >= 97) or not(ord(userInput[2]) <= 104 and ord(userInput[2]) >= 97):
+        return False
+    if not(ord(userInput[1]) <= 56 or ord(userInput[1]) <= 49) or not(ord(userInput[3]) <= 56 or ord(userInput[3]) <= 49):
+        return False
+    return True
+
+def convertInputToNumbers(userInput):
+    '''
+    converts the input to numbers
+    
+    '''
+    numbers = []
+    numbers.append(ord(userInput[0])-97)
+    numbers.append(ord(userInput[1])-49)
+    numbers.append(ord(userInput[2])-97)
+    numbers.append(ord(userInput[3])-49)
+    return numbers
+
+def isFigureAtPosition(positions, wholeChessboard):
+    '''
+    checks if the position given is a piece on the chessboard from the right player
+    
+    '''
+    if wholeChessboard[int(moveOfPlayer)][positions[1]][positions[0]] != " ":
+        return True
+    else:
+        return False
+
+whiteBoard = createWhiteSide()
+blackBoard = createBlackSide()
+chessboard = [blackBoard, whiteBoard]
+
+printBoard(mergeBoards(chessboard))
+
+print(chessboard[1][3][3].checkForAvailableMoves(chessboard[1]))
