@@ -39,8 +39,7 @@ def createWhiteSide():
     chessboard[7][5] = Knight(5, 7)
     chessboard[7][6] = Bishop(6, 7)
     chessboard[7][7] = Rook(7, 7)
-
-    print(chessboard)
+    return chessboard
 
 
 def createBlackSide():
@@ -61,9 +60,5 @@ def createBlackSide():
     chessboard[0][5] = Knight(5, 7)
     chessboard[0][6] = Bishop(6, 7)
     chessboard[0][7] = Rook(7, 7)
+    return chessboard
 
-    print(chessboard)
-
-
-
-createWhiteSide()
