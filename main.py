@@ -11,9 +11,6 @@ moveOfPlayer = True     # True if its the turn of white and False if its blacks 
 
 
 
-
-
-
 def printBoard(chessboard):
     print("\n"*4)
     for i in range(len(chessboard)):
@@ -51,16 +48,16 @@ def createWhiteSide():
     '''
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
-        chessboard[6][i] = Pawn(i, 6)
+        chessboard[6][i] = Pawn(i, 6, True)
 
-    chessboard[7][0] = Rook(0, 7)
-    chessboard[7][1] = Knight(1, 7)
-    chessboard[7][2] = Bishop(2, 7)
-    chessboard[3][3] = Queen(3, 3)
-    chessboard[7][4] = King(4, 7)
-    chessboard[7][5] = Knight(5, 7)
-    chessboard[7][6] = Bishop(6, 7)
-    chessboard[7][7] = Rook(7, 7)
+    chessboard[7][0] = Rook(0, 7, True)
+    chessboard[7][1] = Knight(1, 7, True)
+    chessboard[7][2] = Bishop(2, 7, True)
+    chessboard[3][3] = Queen(3, 3, True)
+    chessboard[7][4] = King(4, 7, True)
+    chessboard[7][5] = Knight(5, 7, True)
+    chessboard[7][6] = Bishop(6, 7, True)
+    chessboard[7][7] = Rook(7, 7, True)
     return chessboard
 
 
@@ -72,16 +69,16 @@ def createBlackSide():
 
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
-        chessboard[1][i] = Pawn(i, 6)
+        chessboard[1][i] = Pawn(i, 6, False)
         
-    chessboard[0][0] = Rook(0, 7)
-    chessboard[0][1] = Knight(1, 7)
-    chessboard[0][2] = Bishop(2, 7)
-    chessboard[0][3] = King(3, 7)
-    chessboard[0][4] = Queen(4, 7)
-    chessboard[0][5] = Knight(5, 7)
-    chessboard[0][6] = Bishop(6, 7)
-    chessboard[0][7] = Rook(7, 7)
+    chessboard[0][0] = Rook(0, 7, False)
+    chessboard[0][1] = Knight(1, 7, False)
+    chessboard[0][2] = Bishop(2, 7, False)
+    chessboard[0][3] = King(3, 7, False)
+    chessboard[0][4] = Queen(4, 7, False)
+    chessboard[0][5] = Knight(5, 7, False)
+    chessboard[0][6] = Bishop(6, 7, False)
+    chessboard[0][7] = Rook(7, 7, False)
     return chessboard
 
 def mergeBoards(chessboard):
@@ -139,4 +136,4 @@ chessboard = [blackBoard, whiteBoard]
 
 printBoard(mergeBoards(chessboard))
 
-print(chessboard[1][3][3].checkForAvailableMoves(chessboard[1]))
+print(chessboard[1][3][3].checkForAvailableMoves(chessboard))
