@@ -1,7 +1,5 @@
 class Queen:
 
-
-
     def __init__(self, xPos, yPos, color):
         self.color = color
         self.char = "Q"
