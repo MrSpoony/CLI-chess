@@ -12,6 +12,10 @@ moveOfPlayer = True     # True if its the turn of white and False if its blacks 
 
 
 def printBoard(chessboard):
+    '''
+    prints the chessboard that gets inputed
+    
+    '''
     print("\n"*4)
     for i in range(len(chessboard)):
         print("\n", end="", flush=True)
