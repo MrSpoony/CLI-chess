@@ -34,14 +34,12 @@ class Queen:
                         if self.isAvailableOpponent(self.pos[0] + currentOffsetX, self.pos[1] + currentOffsetY, chessboard[int(not self.color)]):
                             self.availableMoves.append([self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY])
                             steps += 1
-                            currentOffsetX = moveOffsetOptions[i]*steps
-                            currentOffsetY = moveOffsetOptions[j]*steps
                         else:
                             self.availableMoves.append([self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY])
                             steps += 1
-                            currentOffsetX = moveOffsetOptions[i]*steps
-                            currentOffsetY = moveOffsetOptions[j]*steps
                             break
+                        currentOffsetX = moveOffsetOptions[i]*steps
+                        currentOffsetY = moveOffsetOptions[j]*steps
                     else:
                         break
         return self.availableMoves

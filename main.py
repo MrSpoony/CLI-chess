@@ -57,7 +57,7 @@ def createWhiteSide():
     chessboard[7][0] = Rook(0, 7, True)
     chessboard[7][1] = Knight(1, 7, True)
     chessboard[7][2] = Bishop(2, 7, True)
-    chessboard[3][3] = Queen(3, 3, True)
+    chessboard[7][3] = Queen(3, 7, True)
     chessboard[7][4] = King(4, 7, True)
     chessboard[7][5] = Knight(5, 7, True)
     chessboard[7][6] = Bishop(6, 7, True)
@@ -140,4 +140,4 @@ chessboard = [blackBoard, whiteBoard]
 
 printBoard(mergeBoards(chessboard))
 
-print(chessboard[1][3][3].checkForAvailableMoves(chessboard))
+print(chessboard[1][6][4].checkForAvailableMoves(chessboard))

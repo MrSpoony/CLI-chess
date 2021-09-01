@@ -23,19 +23,25 @@ class Knight:
 
 
     def checkForAvailableMoves(self, chessboard):
-        moveOffsetOptionsY = [-1, 1]
-        moveOffsetOptionsX = [-2, 2]
-        for i in range(2):
-            for i in range(len(moveOffsetOptionsY)):
-                for j in range(len(moveOffsetOptionsX)):
-                    while True:
-                        if self.isAvailable(self.pos[0] + moveOffsetOptionsY[i], self.pos[1] + moveOffsetOptionsX[j], chessboard[int(self.color)]):
-                            if self.isAvailableOpponent(self.pos[0] + moveOffsetOptionsY[i], self.pos[1] + moveOffsetOptionsX[j], chessboard[int(not self.color)]):
-                                self.availableMoves.append([self.pos[0]  + moveOffsetOptionsY[i], self.pos[1] + moveOffsetOptionsX[j]])
-                            else:
-                                self.availableMoves.append([self.pos[0]  + moveOffsetOptionsY[i], self.pos[1] + moveOffsetOptionsX[j]])
-                                break
+        moveOffsetOptions = [-2, -1, 1, 2]
+        for i in range(len(moveOffsetOptions)):
+            for j in range(len(moveOffsetOptions)):
+                currentOffsetX = moveOffsetOptions[i]
+                currentOffsetY = moveOffsetOptions[j]
+                if abs(currentOffsetX) == abs(currentOffsetY):
+                    continue
+                steps = 1
+                while True:
+                    if self.isAvailable(self.pos[0] + currentOffsetX, self.pos[1] + currentOffsetY, chessboard[int(self.color)]):
+                        if self.isAvailableOpponent(self.pos[0] + currentOffsetX, self.pos[1] + currentOffsetY, chessboard[int(not self.color)]):
+                            self.availableMoves.append([self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY])
+                            steps += 1
                         else:
+                            self.availableMoves.append([self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY])
+                            steps += 1
                             break
-            moveOffsetOptionsX, moveOffsetOptionsY = moveOffsetOptionsY, moveOffsetOptionsX
+                        currentOffsetX = moveOffsetOptions[i]*steps
+                        currentOffsetY = moveOffsetOptions[j]*steps
+                    else:
+                        break
         return self.availableMoves
