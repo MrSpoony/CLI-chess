@@ -4,10 +4,17 @@ class Queen:
         self.color = color
         self.char = "Q"
         self.pos = [xPos, yPos]
-        self.availableMoves = []
+
+        # so you know which color it is, there is a "W" in front if it's a piece of white and the opposite with a "B" for black 
+        if self.color:
+            self.char = "W" + self.char
+        else:
+            self.char = "B" + self.char
+
+        self.availableMoves = [self.char]
 
     def isAvailable(self, x, y, chessboard):
-        if x != -1 and y != -1 and y != len(chessboard) and x != len(chessboard[0]):
+        if not(x <= -1 or y <= -1 or y >= len(chessboard) or x >= len(chessboard[0])):
             if chessboard[y][x] == " ":
                 return True
             else:

@@ -6,7 +6,7 @@ from pawn import Pawn
 from rook import Rook
 
 
-moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its True
+moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its set to True
 
 
 
@@ -18,12 +18,23 @@ def printBoard(chessboard):
     '''
     print("\n"*4)
     for i in range(len(chessboard)):
-        print("\n", end="", flush=True)
+        print(f"\n{9-(i+1)} ", end="|", flush=True)
         for j in range(len(chessboard[i])):
             if chessboard[i][j] != " ":
-                print(chessboard[i][j].char, end="", flush=True)
+                print(chessboard[i][j].char, end="|", flush=True)
             else:
-                print(" ", end="", flush=True)
+                print("  ", end="|", flush=True)
+            if len(chessboard)-1 == j:
+                print("\n", end="", flush=True)
+                print("  ", end="", flush=True)
+                print("-"*(8*3+1), end="", flush=True)
+    else:
+        print("\n", end="", flush=True)
+        print("   ", end="", flush=True)
+        for i in range(len(chessboard)):
+            print(chr((i+1) + 64), end="  ", flush=True)
+        else:
+            print("\n")
 
 
 
@@ -75,14 +86,14 @@ def createBlackSide():
     for i in range(len(chessboard[6])):
         chessboard[1][i] = Pawn(i, 6, False)
         
-    chessboard[0][0] = Rook(0, 7, False)
-    chessboard[0][1] = Knight(1, 7, False)
-    chessboard[0][2] = Bishop(2, 7, False)
-    chessboard[0][3] = King(3, 7, False)
-    chessboard[0][4] = Queen(4, 7, False)
-    chessboard[0][5] = Knight(5, 7, False)
-    chessboard[0][6] = Bishop(6, 7, False)
-    chessboard[0][7] = Rook(7, 7, False)
+    chessboard[0][0] = Rook(0, 0, False)
+    chessboard[0][1] = Knight(1, 0, False)
+    chessboard[0][2] = Bishop(2, 0, False)
+    chessboard[0][3] = King(3, 0, False)
+    chessboard[0][4] = Queen(4, 0, False)
+    chessboard[0][5] = Knight(5, 0, False)
+    chessboard[0][6] = Bishop(6, 0, False)
+    chessboard[0][7] = Rook(7, 0, False)
     return chessboard
 
 def mergeBoards(chessboard):
@@ -114,7 +125,7 @@ def isValidInput(userInput):
 
 def convertInputToNumbers(userInput):
     '''
-    converts the input to numbers
+    converts the input to numbers/coordinates using unicode 
     
     '''
     numbers = []
@@ -134,10 +145,13 @@ def isFigureAtPosition(positions, wholeChessboard):
     else:
         return False
 
+# Create the two boards and merge them
 whiteBoard = createWhiteSide()
 blackBoard = createBlackSide()
 chessboard = [blackBoard, whiteBoard]
 
 printBoard(mergeBoards(chessboard))
-
-print(chessboard[1][6][4].checkForAvailableMoves(chessboard))
+for i in range(len(chessboard[0])):
+    for j in range(len(chessboard[0][i])):
+        if chessboard[0][i][j] != " ":
+            print(chessboard[0][i][j].checkForAvailableMoves(chessboard))
