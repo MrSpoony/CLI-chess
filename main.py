@@ -39,9 +39,6 @@ def printBoard(chessboard):
         else:
             print("\n")
 
-
-
-
 def createBoard():
     '''
     Creates a new clean Board
@@ -78,7 +75,6 @@ def createWhiteSide():
     chessboard[7][7] = Rook(7, 7, True)
     return chessboard
 
-
 def createBlackSide():
     '''
     Creates the Black Side of the chessboard with all its figures
@@ -92,10 +88,10 @@ def createBlackSide():
     chessboard[0][0] = Rook(0, 0, False)
     chessboard[0][1] = Knight(1, 0, False)
     chessboard[0][2] = Bishop(2, 0, False)
-    chessboard[0][3] = Queen(4, 0, False)
-    chessboard[0][4] = King(3, 0, False)
-    chessboard[0][5] = Knight(5, 0, False)
-    chessboard[0][6] = Bishop(6, 0, False)
+    chessboard[0][3] = Queen(3, 0, False)
+    chessboard[0][4] = King(4, 0, False)
+    chessboard[0][5] = Bishop(5, 0, False)
+    chessboard[0][6] = Knight(6, 0, False)
     chessboard[0][7] = Rook(7, 0, False)
     return chessboard
 
@@ -140,10 +136,12 @@ def isPieceAtPos(positions, wholeChessboard):
 def getValidInput():
     while True:
         userInput = input("Please enter your move in the format a1a2:\n")
-        if isValidInput(userInput):
+        if userInput == "moves":
+            print(allPossibleMoves(chessboard))
+        elif isValidInput(userInput):
             convertedInput = convertInputToNumbers(userInput)
             if isPieceAtPos(convertedInput[0], chessboard):
-                if convertedInput[1] in chessboard[int(moveOfPlayer)][convertedInput[0][1]][convertedInput[0][0]].checkForAvailableMoves(chessboard):
+                if convertedInput in chessboard[int(moveOfPlayer)][convertedInput[0][1]][convertedInput[0][0]].checkForAvailableMoves(chessboard):
                     break
                 else:
                     print("Move not available, try again")
@@ -166,6 +164,17 @@ def convertInputToNumbers(userInput):
     numbers = [numbers[i:i+2] for i in range(0, len(numbers), 2)]
     return numbers
 
+def convertNumbersLikeInput(numbers):
+    '''
+    converts the input to numbers/coordinates using unicode 
+    
+    '''
+    chars = ""
+    chars += chr(numbers[0][0]+97)
+    chars += str(8 - numbers[0][1])
+    chars += chr(numbers[1][0]+97)
+    chars += str(8 - numbers[1][1])
+    return chars
 
 def movePiece(coordinatesFrom, coordinatesTo, chessboard):
     '''
@@ -190,15 +199,27 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
         print("Something went wrong while moving the pieces, the piece to move does not exist")
     return(chessboard)
 
+def allPossibleMoves(chessboard):
+    allpossiblemoves = []
+    for i in range(len(chessboard)):
+        for j in range(len(chessboard[i])):
+            for k in range(len(chessboard[i][j])):
+                if chessboard[i][j][k] != " ":
+                    for l in range(len(chessboard[i][j][k].checkForAvailableMoves(chessboard))):
+                        if chessboard[i][j][k].color == moveOfPlayer:
+                            allpossiblemoves.append(convertNumbersLikeInput(chessboard[i][j][k].checkForAvailableMoves(chessboard)[l]))
+    return allpossiblemoves
+
 # Create the two boards and merge them
 whiteBoard = createWhiteSide()
 blackBoard = createBlackSide()
 chessboard = [blackBoard, whiteBoard]
 
-
+# print first board
 printBoard(mergeBoards(chessboard))
+
 while True:
-    testinput = getValidInput()
-    chessboard = movePiece(testinput[0], testinput[1], chessboard)
+    playerMove = getValidInput()
+    chessboard = movePiece(playerMove[0], playerMove[1], chessboard)
     printBoard(mergeBoards(chessboard))
     moveOfPlayer = not moveOfPlayer

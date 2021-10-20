@@ -4,7 +4,6 @@ class Queen(Piece):
     def __init__(self, xPos, yPos, color):
         super().__init__(xPos, yPos, color)
         self.char += "Q"
-        self.availableMoves = [self.char]
 
     def checkForAvailableMoves(self, chessboard):
         moveOffsetOptions = [-1, 0, 1]
@@ -16,10 +15,10 @@ class Queen(Piece):
                 while True:
                     if self.isAvailable(self.pos[0] + currentOffsetX, self.pos[1] + currentOffsetY, chessboard[int(self.color)]):
                         if self.isAvailableOpponent(self.pos[0] + currentOffsetX, self.pos[1] + currentOffsetY, chessboard[int(not self.color)]):
-                            self.availableMoves.append([self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY])
+                            self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY]])
                             steps += 1
                         else:
-                            self.availableMoves.append([self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY])
+                            self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY]])
                             steps += 1
                             break
                         currentOffsetX = moveOffsetOptions[i]*steps

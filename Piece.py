@@ -3,7 +3,7 @@ class Piece:
     def __init__(self, xPos, yPos, color):
         self.pos = [xPos, yPos]
         self.color = color
-
+        self.availableMoves = []
         # so you know which color it is, there is a "W" in front if it's a piece of white and the opposite with a "B" for black 
         if self.color:
             self.char = "W"
