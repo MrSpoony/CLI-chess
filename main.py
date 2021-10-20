@@ -1,9 +1,9 @@
-from king import King
-from queen import Queen
-from bishop import Bishop
-from knight import Knight
-from pawn import Pawn
-from rook import Rook
+from King import King
+from Queen import Queen
+from Bishop import Bishop
+from Knight import Knight
+from Pawn import Pawn
+from Rook import Rook
 
 
 moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its set to True
