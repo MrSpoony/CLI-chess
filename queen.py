@@ -28,6 +28,13 @@ class Queen:
         else:
             return False
 
+    def setNewCoordinates(self, chessboard):
+        for i in range(len(chessboard[int(self.color)])):
+            for j in range(len(chessboard[int(self.color)][i])):
+                if chessboard[int(self.color)][i][j] != " ":
+                    if chessboard[int(self.color)][i][j].pos == self.pos:
+                        self.pos = [j, i]
+
 
     def checkForAvailableMoves(self, chessboard):
         moveOffsetOptions = [-1, 0, 1]

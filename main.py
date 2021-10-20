@@ -8,8 +8,11 @@ from rook import Rook
 
 moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its set to True
 
-
-
+'''
+coordinates Are always given in the Format [x, y]
+But the Chess Array is made/printed in the Format y, x 
+So change the coordinates when interchanging them between pieces and Chess Arrays 
+'''
 
 def printBoard(chessboard):
     '''
@@ -84,7 +87,7 @@ def createBlackSide():
 
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
-        chessboard[1][i] = Pawn(i, 6, False)
+        chessboard[1][i] = Pawn(i, 1, False)
         
     chessboard[0][0] = Rook(0, 0, False)
     chessboard[0][1] = Knight(1, 0, False)
@@ -112,7 +115,8 @@ def mergeBoards(chessboard):
 
 def isValidInput(userInput):
     '''
-    checks if the userInput is a valid Input or not
+    checks if the userInput is a valid Input or not 
+    using unicode decodation
     
     '''
     if len(userInput) != 4:
@@ -123,19 +127,7 @@ def isValidInput(userInput):
         return False
     return True
 
-def convertInputToNumbers(userInput):
-    '''
-    converts the input to numbers/coordinates using unicode 
-    
-    '''
-    numbers = []
-    numbers.append(ord(userInput[0])-97)
-    numbers.append(ord(userInput[1])-49)
-    numbers.append(ord(userInput[2])-97)
-    numbers.append(ord(userInput[3])-49)
-    return numbers
-
-def isFigureAtPosition(positions, wholeChessboard):
+def isPieceAtPos(positions, wholeChessboard):
     '''
     checks if the position given is a piece on the chessboard from the right player
     
@@ -145,13 +137,68 @@ def isFigureAtPosition(positions, wholeChessboard):
     else:
         return False
 
+def getValidInput():
+    while True:
+        userInput = input("Please enter your move in the format a1a2:\n")
+        if isValidInput(userInput):
+            convertedInput = convertInputToNumbers(userInput)
+            if isPieceAtPos(convertedInput[0], chessboard):
+                if convertedInput[1] in chessboard[int(moveOfPlayer)][convertedInput[0][1]][convertedInput[0][0]].checkForAvailableMoves(chessboard):
+                    break
+                else:
+                    print("Move not available, try again")
+            else:
+                print("No piece at that position, try again")
+        else:
+            print("No valid input, try again")
+    return convertedInput
+
+def convertInputToNumbers(userInput):
+    '''
+    converts the input to numbers/coordinates using unicode 
+    
+    '''
+    numbers = []
+    numbers.append(ord(userInput[0])-97)
+    numbers.append(7 - (ord(userInput[1])-49))
+    numbers.append(ord(userInput[2])-97)
+    numbers.append(7 - (ord(userInput[3])-49))
+    numbers = [numbers[i:i+2] for i in range(0, len(numbers), 2)]
+    return numbers
+
+
+def movePiece(coordinatesFrom, coordinatesTo, chessboard):
+    '''
+    first checks which color is moving 
+    and moves this piece from the coordinates coordinatesFrom 
+    to the coordinatesTo on the same board 
+    then setting the old coordinates to " " 
+    and setting the coordinateTo on the other board to " "
+    
+    '''
+    if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
+        chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]
+        chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] = " "
+        chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = " "
+        chessboard[0][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
+    elif chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
+        chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]]
+        chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] = " "
+        chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = " "
+        chessboard[1][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
+    else:
+        print("Something went wrong while moving the pieces, the piece to move does not exist")
+    return(chessboard)
+
 # Create the two boards and merge them
 whiteBoard = createWhiteSide()
 blackBoard = createBlackSide()
 chessboard = [blackBoard, whiteBoard]
 
+
 printBoard(mergeBoards(chessboard))
-for i in range(len(chessboard[0])):
-    for j in range(len(chessboard[0][i])):
-        if chessboard[0][i][j] != " ":
-            print(chessboard[0][i][j].checkForAvailableMoves(chessboard))
+while True:
+    testinput = getValidInput()
+    chessboard = movePiece(testinput[0], testinput[1], chessboard)
+    printBoard(mergeBoards(chessboard))
+    moveOfPlayer = not moveOfPlayer
