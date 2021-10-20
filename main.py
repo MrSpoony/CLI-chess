@@ -24,7 +24,7 @@ def printBoard(chessboard):
         print(f"\n{9-(i+1)} ", end="|", flush=True)
         for j in range(len(chessboard[i])):
             if chessboard[i][j] != " ":
-                print(chessboard[i][j].char, end="|", flush=True)
+                print(chessboard[i][j], end="|", flush=True)
             else:
                 print("  ", end="|", flush=True)
             if len(chessboard)-1 == j:
@@ -137,7 +137,7 @@ def getValidInput():
     while True:
         userInput = input("Please enter your move in the format a1a2:\n")
         if userInput == "moves":
-            print(allPossibleMoves(chessboard))
+            print(allPossibleMoves(chessboard, moveOfPlayer))
         elif isValidInput(userInput):
             convertedInput = convertInputToNumbers(userInput)
             if isPieceAtPos(convertedInput[0], chessboard):
@@ -199,16 +199,51 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
         print("Something went wrong while moving the pieces, the piece to move does not exist")
     return(chessboard)
 
-def allPossibleMoves(chessboard):
+def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False):
     allpossiblemoves = []
     for i in range(len(chessboard)):
         for j in range(len(chessboard[i])):
             for k in range(len(chessboard[i][j])):
                 if chessboard[i][j][k] != " ":
                     for l in range(len(chessboard[i][j][k].checkForAvailableMoves(chessboard))):
-                        if chessboard[i][j][k].color == moveOfPlayer:
-                            allpossiblemoves.append(convertNumbersLikeInput(chessboard[i][j][k].checkForAvailableMoves(chessboard)[l]))
+                        if chessboard[i][j][k].color == whiteOrBlack:
+                            if asNumbers:
+                                allpossiblemoves.append(chessboard[i][j][k].checkForAvailableMoves(chessboard)[l])
+                            else:
+                                allpossiblemoves.append(convertNumbersLikeInput(chessboard[i][j][k].checkForAvailableMoves(chessboard)[l]))
+    if asNumbers:
+        for i in range(len(allpossiblemoves)):
+            allpossiblemoves[i][0] = allpossiblemoves[i][0].pop(0)
+            allpossiblemoves[i][1] = allpossiblemoves[i][1].pop(1)
     return allpossiblemoves
+
+def checkForCheck(chessboard, whiteOrBlack):
+    moves = allPossibleMoves(chessboard, whiteOrBlack, True)
+    movesWithoutDuplicates = []
+    for i in moves:
+        if i not in movesWithoutDuplicates:
+            movesWithoutDuplicates.append(moves[i])
+    moves = movesWithoutDuplicates
+    for i in moves:
+        if "K" in chessboard[int(whiteOrBlack)][i[0]][i[1]]:
+            return True
+    return False
+
+def checkForCheckmate(chessboard, whiteOrBlack):
+    for i in range(len(chessboard[int(whiteOrBlack)])):
+        for j in range(len(chessboard[int(whiteOrBlack)][i])):
+            for k in range(len(chessboard[int(whiteOrBlack)][i][j])):
+                if "K" in chessboard[int(whiteOrBlack)][i][j]:
+                    king = chessboard[int(whiteOrBlack)][i][j]
+    movesPossibleOpponent = allPossibleMoves(chessboard, not whiteOrBlack, True)
+    possibleMovesKing = king.checkforAvailableMoves(chessboard)
+    for i in possibleMovesKing:
+        if i in movesPossibleOpponent:
+            possibleMovesKing.remove(i)
+    if possibleMovesKing != [] and king.pos in movesPossibleOpponent:
+        return False
+    else:
+        return True
 
 # Create the two boards and merge them
 whiteBoard = createWhiteSide()
@@ -219,6 +254,7 @@ chessboard = [blackBoard, whiteBoard]
 printBoard(mergeBoards(chessboard))
 
 while True:
+    checkForCheck(chessboard)
     playerMove = getValidInput()
     chessboard = movePiece(playerMove[0], playerMove[1], chessboard)
     printBoard(mergeBoards(chessboard))

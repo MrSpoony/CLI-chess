@@ -5,6 +5,9 @@ class Knight(Piece):
         super().__init__(xPos, yPos, color)
         self.char += "N"
 
+    def __str__(self):
+        return self.char
+
     def checkForAvailableMoves(self, chessboard):
         moveOffsetOptions = [-2, -1, 1, 2]
         for i in range(len(moveOffsetOptions)):

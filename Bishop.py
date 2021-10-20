@@ -5,6 +5,9 @@ class Bishop(Piece):
         super().__init__(xPos, yPos, color)
         self.char += "B"
 
+    def __str__(self):
+        return self.char
+
     def checkForAvailableMoves(self, chessboard):
         moveOffsetOptions = [-1, 1]
         for i in range(len(moveOffsetOptions)):

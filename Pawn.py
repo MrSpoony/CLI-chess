@@ -5,6 +5,9 @@ class Pawn(Piece):
         super().__init__(xPos, yPos, color)
         self.char += "P"
 
+    def __str__(self):
+        return self.char
+
     def checkForAvailableMoves(self, chessboard):
         if self.color:
             if self.isAvailable(self.pos[0], self.pos[1] - 1, chessboard[int(self.color)]):

@@ -5,6 +5,9 @@ class King(Piece):
         super().__init__(xPos, yPos, color)
         self.char += "K"
 
+    def __str__(self):
+        return self.char
+        
     def checkForAvailableMoves(self, chessboard):
         moveOffsetOptions = [-1, 0, 1]
         for i in range(len(moveOffsetOptions)):
