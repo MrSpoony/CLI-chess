@@ -9,6 +9,7 @@ class Knight(Piece):
         return self.char
 
     def checkForAvailableMoves(self, chessboard):
+        self.availableMoves = []
         moveOffsetOptions = [-2, -1, 1, 2]
         for i in range(len(moveOffsetOptions)):
             for j in range(len(moveOffsetOptions)):

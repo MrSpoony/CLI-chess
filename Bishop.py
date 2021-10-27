@@ -9,6 +9,7 @@ class Bishop(Piece):
         return self.char
 
     def checkForAvailableMoves(self, chessboard):
+        self.availableMoves = []
         moveOffsetOptions = [-1, 1]
         for i in range(len(moveOffsetOptions)):
             for j in range(len(moveOffsetOptions)):

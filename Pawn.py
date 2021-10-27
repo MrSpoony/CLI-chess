@@ -9,6 +9,7 @@ class Pawn(Piece):
         return self.char
 
     def checkForAvailableMoves(self, chessboard):
+        self.availableMoves = []
         if self.color:
             if self.isAvailable(self.pos[0], self.pos[1] - 1, chessboard[int(self.color)]):
                 if self.isAvailableOpponent(self.pos[0], self.pos[1] - 1, chessboard[int(not self.color)]):
