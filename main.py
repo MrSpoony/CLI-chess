@@ -5,6 +5,7 @@ from Knight import Knight
 from Pawn import Pawn
 from Rook import Rook
 
+import copy
 
 moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its set to True
 
@@ -70,8 +71,8 @@ def createWhiteSide():
     chessboard[7][2] = Bishop(2, 7, True)
     chessboard[7][3] = Queen(3, 7, True)
     chessboard[7][4] = King(4, 7, True)
-    chessboard[7][5] = Knight(5, 7, True)
-    chessboard[7][6] = Bishop(6, 7, True)
+    chessboard[7][5] = Bishop(5, 7, True)
+    chessboard[7][6] = Knight(6, 7, True)
     chessboard[7][7] = Rook(7, 7, True)
     return chessboard
 
@@ -147,10 +148,10 @@ def getValidInput():
         elif isValidInput(userInput):
             convertedInput = convertInputToNumbers(userInput)
             if isPieceAtPos(convertedInput[0], chessboard):
-                if convertedInput in allMoves(chessboard, moveOfPlayer, True):
+                if convertedInput in allPossibleMoves(chessboard, moveOfPlayer, True):
                     break
                 else:
-                    print("Move not available, try again")
+                    print("Move is not available/possible, try again")
             else:
                 print("No piece at that position, try again")
         else:
@@ -202,7 +203,7 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
         chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = " "
         chessboard[1][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
     else:
-        print("Something went wrong while moving the pieces, the piece to move does not exist")
+        raise("The piece you are trying to move does not exist")
     return(chessboard)
 
 def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = True):
@@ -211,7 +212,9 @@ def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = Tr
     chessboard: the current wholeChessboard
     whiteOrBlack: moves for which person
     asNumbers: should the output be in numbers or in the human readable format (e2e4)
-    withStartPosition: should the output contain the Startposition of the pieces works only if asNumbers is True if asNumbers is False the start Positions will still be in the Output.'''
+    withStartPosition: should the output contain the Startposition of the pieces works only if asNumbers is True if asNumbers is False the start Positions will still be in the Output.
+    
+    '''
     moves = []
     for i in range(len(chessboard)):
         for j in range(len(chessboard[i])):
@@ -235,7 +238,9 @@ def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosit
     moves = allMoves(chessboard, whiteOrBlack, True, True)
     possibleMoves = []
     for move in moves:
-        if checkForCheck(movePiece(move[0], move[1], chessboard), whiteOrBlack):
+        staticChessboard = copy.deepcopy(chessboard)
+        tempChessboard = movePiece(move[0], move[1], staticChessboard)
+        if not checkForCheck(tempChessboard, whiteOrBlack):
             if asNumbers:
                 possibleMoves.append(move)
             else:
@@ -243,6 +248,7 @@ def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosit
         resetAllCoordinates(chessboard)
     if (not withStartPosition) and asNumbers:
         removesStartPosition(possibleMoves)
+    return possibleMoves
 
 def resetAllCoordinates(chessboard):
     '''
@@ -273,15 +279,19 @@ def checkForCheck(chessboard, whiteOrBlack):
     returns True or False
 
     '''
-    moves = allMoves(chessboard, whiteOrBlack, True, False)
+    moves = allMoves(chessboard, not whiteOrBlack, True, False)
     movesWithoutDuplicates = []
-    for i in moves:
-        if i not in movesWithoutDuplicates:
-            movesWithoutDuplicates.append(i)
+    for move in moves:
+        if move not in movesWithoutDuplicates:
+            movesWithoutDuplicates.append(move)
     moves = movesWithoutDuplicates
-    for i in moves:
-        if "K" in str(chessboard[int(whiteOrBlack)][i[0]][i[1]]):
-            return True
+    for move in moves:
+        if whiteOrBlack:
+            if "WK" == str(chessboard[1][move[1]][move[0]]):
+                return True
+        else:
+            if "BK" == str(chessboard[0][move[1]][move[0]]):
+                return True
     return False
 
 def checkForCheckmate(chessboard, whiteOrBlack):
