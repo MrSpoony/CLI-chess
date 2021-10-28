@@ -22,11 +22,10 @@ class Rook(Piece):
                     if self.isAvailable(self.pos[0] + currentOffsetX, self.pos[1] + currentOffsetY, chessboard[int(self.color)]):
                         if self.isAvailableOpponent(self.pos[0] + currentOffsetX, self.pos[1] + currentOffsetY, chessboard[int(not self.color)]):
                             self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY]])
-                            steps += 1
                         else:
                             self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0]  + currentOffsetX, self.pos[1] + currentOffsetY]])
-                            steps += 1
                             break
+                        steps += 1
                         currentOffsetX = moveOffsetOptions[i]*steps
                         currentOffsetY = moveOffsetOptions[j]*steps
                     else:

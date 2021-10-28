@@ -148,8 +148,11 @@ def getValidInput():
         elif isValidInput(userInput):
             convertedInput = convertInputToNumbers(userInput)
             if isPieceAtPos(convertedInput[0], chessboard):
-                if convertedInput in allPossibleMoves(chessboard, moveOfPlayer, True):
-                    break
+                if convertedInput in allMoves(chessboard, moveOfPlayer, True):
+                    if convertedInput in allPossibleMoves(chessboard, moveOfPlayer, True):
+                        break
+                    else:
+                        print("Move sets player in check, try again")
                 else:
                     print("Move is not available/possible, try again")
             else:
@@ -240,7 +243,7 @@ def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosit
     for move in moves:
         staticChessboard = copy.deepcopy(chessboard)
         tempChessboard = movePiece(move[0], move[1], staticChessboard)
-        if not checkForCheck(tempChessboard, whiteOrBlack):
+        if not isCheck(tempChessboard, whiteOrBlack):
             if asNumbers:
                 possibleMoves.append(move)
             else:
@@ -273,25 +276,25 @@ def removesStartPosition(moves):
         moves[i][0] = moves[i][0].pop(0)
         moves[i][1] = moves[i][1].pop(1)
 
-def checkForCheck(chessboard, whiteOrBlack):
+def isCheck(chessboard, whiteOrBlack):
     '''
     checks if the whiteOrBlack player is in check in the board chessboard
     returns True or False
 
     '''
     moves = allMoves(chessboard, not whiteOrBlack, True, False)
+    for i in range(len(chessboard[int(whiteOrBlack)])):
+        for j in range(len(chessboard[int(whiteOrBlack)][i])):
+            if str(chessboard[int(whiteOrBlack)][i][j]) in {"WK", "BK"}:
+                posKing = [j, i]
     movesWithoutDuplicates = []
     for move in moves:
         if move not in movesWithoutDuplicates:
             movesWithoutDuplicates.append(move)
     moves = movesWithoutDuplicates
     for move in moves:
-        if whiteOrBlack:
-            if "WK" == str(chessboard[1][move[1]][move[0]]):
-                return True
-        else:
-            if "BK" == str(chessboard[0][move[1]][move[0]]):
-                return True
+        if move == posKing:
+            return True
     return False
 
 def checkForCheckmate(chessboard, whiteOrBlack):
