@@ -4,8 +4,7 @@ from Bishop import Bishop
 from Knight import Knight
 from Pawn import Pawn
 from Rook import Rook
-
-import copy
+from copy import deepcopy
 
 moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its set to True
 
@@ -241,7 +240,7 @@ def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosit
     moves = allMoves(chessboard, whiteOrBlack, True, True)
     possibleMoves = []
     for move in moves:
-        staticChessboard = copy.deepcopy(chessboard)
+        staticChessboard = deepcopy(chessboard)
         tempChessboard = movePiece(move[0], move[1], staticChessboard)
         if not isCheck(tempChessboard, whiteOrBlack):
             if asNumbers:
@@ -273,8 +272,7 @@ def removesStartPosition(moves):
     
     '''
     for i in range(len(moves)):
-        moves[i][0] = moves[i][0].pop(0)
-        moves[i][1] = moves[i][1].pop(1)
+        moves[i] = moves[i][1]
 
 def isCheck(chessboard, whiteOrBlack):
     '''
