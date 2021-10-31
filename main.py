@@ -1,3 +1,5 @@
+from heapq import merge
+from pynvim import command
 from King import King
 from Queen import Queen
 from Bishop import Bishop
@@ -6,11 +8,9 @@ from Pawn import Pawn
 from Rook import Rook
 from copy import deepcopy
 
-moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its set to True
-
 '''
 coordinates Are always given in the Format [x, y]
-But the Chess Array is made/printed in the Format y, x 
+But the Chess Array is made/printed in the Format whiteOrBlack, y, x 
 So change the coordinates when interchanging them between pieces and Chess Arrays 
 '''
 
@@ -24,7 +24,7 @@ def printBoard(chessboard):
         print(f"\n{9-(i+1)} ", end="|", flush=True)
         for j in range(len(chessboard[i])):
             if chessboard[i][j] != " ":
-                print(chessboard[i][j], end="|", flush=True)
+                print(str(chessboard[i][j]), end="|", flush=True)
             else:
                 print("  ", end="|", flush=True)
             if len(chessboard)-1 == j:
@@ -38,6 +38,17 @@ def printBoard(chessboard):
             print(chr((i+1) + 64), end="  ", flush=True)
         else:
             print("\n")
+
+def printMoves(chessboard, whiteOrBlack):
+    printBoard(mergeBoards(chessboard))
+    print("Your possible moves are currently: ")
+    possibleMoves = allPossibleMoves(chessboard, whiteOrBlack)
+    for i in possibleMoves:
+        if possibleMoves.index(i) != len(possibleMoves) - 1:
+            print(i, end=", ", flush=True)
+        else:
+            print(i)
+    print("\n")
 
 def createBoard():
     '''
@@ -134,16 +145,14 @@ def isPieceAtPos(positions, wholeChessboard):
         return False
 
 def getValidInput():
+    '''
+    Gets a valid Input of the player and returns that, first it checks if the input is a command 
+    if yes it first executes that command and asks again until it gets a right input
+    '''
     while True:
         userInput = input("Please enter your move in the format a1a2 or enter commands to show all the commands:\n")
-        if userInput.lower() == "commands":
-            print("\n\nCommands: \n\nmoves:\t\tShows all possible moves for active player.\nexit:\t\tExits the match.\nshow:\t\tShows the chessboard again.\n")
-        elif userInput.lower() == "moves":
-            print(allPossibleMoves(chessboard, moveOfPlayer))
-        elif userInput.lower() == "exit":
-            exit()
-        elif userInput.lower() == "show":
-            printBoard(mergeBoards(chessboard))
+        if userInput.lower() in listOfCommands:
+            doCommands(listOfCommands.index(userInput))
         elif isValidInput(userInput):
             convertedInput = convertInputToNumbers(userInput)
             if isPieceAtPos(convertedInput[0], chessboard):
@@ -160,10 +169,22 @@ def getValidInput():
             print("No valid input, try again")
     return convertedInput
 
+def doCommands(commandIndex):
+    '''
+    CommandIndex is the index of the input in the variable listOfCommands
+    '''
+    if commandIndex == 0:
+        print("\n\nCommands: \n\nmoves:\t\tShows all possible moves for active player.\nexit:\t\tExits the match.\nshow:\t\tShows the chessboard again.\n")
+    elif 1 <= commandIndex <= 2:
+        printMoves(chessboard, moveOfPlayer)
+    elif 3 <= commandIndex <= 4:
+        printBoard(mergeBoards(chessboard))
+    elif commandIndex == 5:
+        exit()
+ 
 def convertInputToNumbers(userInput):
     '''
     converts the input to numbers/coordinates using unicode 
-    
     '''
     numbers = []
     numbers.append(ord(userInput[0])-97)
@@ -176,7 +197,6 @@ def convertInputToNumbers(userInput):
 def convertNumbersLikeInput(numbers):
     '''
     converts the numbers to input using unicode 
-    
     '''
     chars = ""
     chars += chr(numbers[0][0]+97)
@@ -192,7 +212,6 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
     to the coordinatesTo on the same board 
     then setting the old coordinates to " " 
     and setting the coordinateTo on the other board to " "
-    
     '''
     if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
         chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]
@@ -215,7 +234,6 @@ def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = Tr
     whiteOrBlack: moves for which person
     asNumbers: should the output be in numbers or in the human readable format (e2e4)
     withStartPosition: should the output contain the Startposition of the pieces works only if asNumbers is True if asNumbers is False the start Positions will still be in the Output.
-    
     '''
     moves = []
     for i in range(len(chessboard)):
@@ -235,7 +253,6 @@ def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = Tr
 def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = True):
     '''
     Returns all moves that are currently possible, excluding the ones which set the king into check
-    
     '''
     moves = allMoves(chessboard, whiteOrBlack, True, True)
     possibleMoves = []
@@ -269,7 +286,6 @@ def removesStartPosition(moves):
     removes the first half of each item in the array so there are only the endpositions
     example:    [[[0, 0], [1, 1]], [[1, 1], [2, 2]]]
     to:         [[1, 1], [2, 2]]
-    
     '''
     for i in range(len(moves)):
         moves[i] = moves[i][1]
@@ -278,7 +294,6 @@ def isCheck(chessboard, whiteOrBlack):
     '''
     checks if the whiteOrBlack player is in check in the board chessboard
     returns True or False
-
     '''
     moves = allMoves(chessboard, not whiteOrBlack, True, False)
     for i in range(len(chessboard[int(whiteOrBlack)])):
@@ -313,6 +328,11 @@ def checkForCheckmate(chessboard, whiteOrBlack):
         return False
     else:
         return True
+
+
+
+moveOfPlayer = True     # True if its the turn of white and False if its blacks turn, because white starts its set to True
+listOfCommands = ["commands", "moves", "turns", "show", "showboard", "exit", "quit"]
 
 # Create the two boards and merge them
 whiteBoard = createWhiteSide()
