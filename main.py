@@ -17,7 +17,6 @@ So change the coordinates when interchanging them between pieces and Chess Array
 def printBoard(chessboard):
     '''
     prints the chessboard that gets inputed
-    
     '''
     print("\n"*4)
     for i in range(len(chessboard)):
@@ -53,7 +52,6 @@ def printMoves(chessboard, whiteOrBlack):
 def createBoard():
     '''
     Creates a new clean Board
-
     '''
     chessboard = [[]] * (8)
     chessboard[0].append(" "*8)
@@ -70,7 +68,6 @@ def createBoard():
 def createWhiteSide():
     '''
     Creates the White Side of the chessboard with all its figures
-    
     '''
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
@@ -89,9 +86,7 @@ def createWhiteSide():
 def createBlackSide():
     '''
     Creates the Black Side of the chessboard with all its figures
-    
     '''
-
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
         chessboard[1][i] = Pawn(i, 1, False)
@@ -109,7 +104,6 @@ def createBlackSide():
 def mergeBoards(chessboard):
     '''
     merges array of boards to one board and returns that
-    
     '''
     newBoard = createBoard()
     for i in range(len(chessboard[0])):
@@ -124,7 +118,6 @@ def isValidInput(userInput):
     '''
     checks if the userInput is a valid Input or not 
     using unicode decodation
-    
     '''
     if len(userInput) != 4:
         return False
@@ -136,8 +129,7 @@ def isValidInput(userInput):
 
 def isPieceAtPos(positions, wholeChessboard):
     '''
-    checks if the position given is a piece on the chessboard from the right player
-    
+    Checks if the position given is a piece on the chessboard from the right player
     '''
     if wholeChessboard[int(moveOfPlayer)][positions[1]][positions[0]] != " ":
         return True
@@ -236,16 +228,16 @@ def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = Tr
     withStartPosition: should the output contain the Startposition of the pieces works only if asNumbers is True if asNumbers is False the start Positions will still be in the Output.
     '''
     moves = []
-    for i in range(len(chessboard)):
-        for j in range(len(chessboard[i])):
-            for k in range(len(chessboard[i][j])):
-                if chessboard[i][j][k] != " ":
-                    for l in range(len(chessboard[i][j][k].checkForAvailableMoves(chessboard))):
-                        if chessboard[i][j][k].color == whiteOrBlack:
-                            if asNumbers:
-                                moves.append(chessboard[i][j][k].checkForAvailableMoves(chessboard)[l])
-                            else:
-                                moves.append(convertNumbersLikeInput(chessboard[i][j][k].checkForAvailableMoves(chessboard)[l]))
+
+    for i in range(len(chessboard[int(whiteOrBlack)])):
+        for j in range(len(chessboard[int(whiteOrBlack)][i])):
+            if chessboard[int(whiteOrBlack)][i][j] != " ":
+                avalableMovesCurrentPiece = chessboard[int(whiteOrBlack)][i][j].checkForAvailableMoves(chessboard)
+                for k in range(len(avalableMovesCurrentPiece)):
+                    if asNumbers:
+                        moves.append(avalableMovesCurrentPiece[k])
+                    else:
+                        moves.append(convertNumbersLikeInput(avalableMovesCurrentPiece[k]))
     if (not withStartPosition) and asNumbers:
         removesStartPosition(moves)
     return moves
@@ -253,6 +245,10 @@ def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = Tr
 def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = True):
     '''
     Returns all moves that are currently possible, excluding the ones which set the king into check
+    chessboard: the current wholeChessboard
+    whiteOrBlack: moves for which person
+    asNumbers: should the output be in numbers or in the human readable format (e2e4)
+    withStartPosition: should the output contain the Startposition of the pieces works only if asNumbers is True if asNumbers is False the start Positions will still be in the Output.
     '''
     moves = allMoves(chessboard, whiteOrBlack, True, True)
     possibleMoves = []
@@ -272,7 +268,6 @@ def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosit
 def resetAllCoordinates(chessboard):
     '''
     Resets all Coordinates of the pieces which are on the board, so if they got changed, they will be reset here
-    
     '''
     for i in range(len(chessboard)):
         for j in range(len(chessboard[i])):
@@ -313,7 +308,6 @@ def isCheck(chessboard, whiteOrBlack):
 def checkForCheckmate(chessboard, whiteOrBlack):
     '''
     checks if the whiteOrBlack player's king is checkmated, returns True or False
-    
     '''
     for i in range(len(chessboard[int(whiteOrBlack)])):
         for j in range(len(chessboard[int(whiteOrBlack)][i])):
