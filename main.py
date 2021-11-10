@@ -1,3 +1,4 @@
+from colorama.ansi import Fore
 from King import King
 from Queen import Queen
 from Bishop import Bishop
@@ -375,6 +376,17 @@ def isCheckMate(moves):
     else:
         return False
 
+def checkIfPawnAtEnd(chessboard, whiteOrBlack):
+    if whiteOrBlack:
+        for i in range(len(chessboard[int(whiteOrBlack)][7])):
+            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][0][i]):
+                chessboard[int(whiteOrBlack)][0][i] = " "
+                chessboard[int(whiteOrBlack)][0][i] = Queen(i, 0, True)
+    else:
+        for i in range(len(chessboard[int(whiteOrBlack)][7])):
+            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][7][i]):
+                chessboard[int(whiteOrBlack)][7][i] = " "
+                chessboard[int(whiteOrBlack)][7][i] = Queen(i, 7, True)
 def gameOver():
     '''
     Prints the Game Over statement
@@ -399,6 +411,7 @@ while True:
         gameOver()
     playerMove = getValidInput(possibleMoves)
     chessboard = movePiece(playerMove[0], playerMove[1], chessboard)
+    checkIfPawnAtEnd(chessboard, moveOfPlayer)
     printBoard(mergeBoards(chessboard))
     moveOfPlayer = not moveOfPlayer
     possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
