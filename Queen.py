@@ -1,9 +1,10 @@
 from Piece import Piece
+import colorama
 class Queen(Piece):
 
     def __init__(self, xPos, yPos, color):
         super().__init__(xPos, yPos, color)
-        self.char += "Q"
+        self.char += "Q" + colorama.Style.RESET_ALL
 
     def __str__(self):
         return self.char

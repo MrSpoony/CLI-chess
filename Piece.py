@@ -1,3 +1,4 @@
+import colorama
 class Piece:
 
     def __init__(self, xPos, yPos, color):
@@ -6,9 +7,9 @@ class Piece:
         self.availableMoves = []
         # so you know which color it is, there is a "W" in front if it's a piece of white and the opposite with a "B" for black 
         if self.color:
-            self.char = "W"
+            self.char = colorama.Fore.BLUE + "W"
         else:
-            self.char = "B"
+            self.char = colorama.Fore.RED + "B"
 
     def isAvailable(self, x, y, chessboard):
         if not(x <= -1 or y <= -1 or y >= len(chessboard) or x >= len(chessboard[0])):
