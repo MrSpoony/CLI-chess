@@ -6,12 +6,12 @@ from Pawn import Pawn
 from Rook import Rook
 from copy import deepcopy
 import colorama
+
 '''
 Import all the pieces
 to copy without problems import copy (deepcopy)
 for nice colors import colorama
 '''
-
 
 
 '''
@@ -388,7 +388,7 @@ def gameOver():
 # Create the two boards and merge them
 whiteBoard = createWhiteSide()
 blackBoard = createBlackSide()
-chessboardP= [blackBoard, whiteBoard]
+chessboard = [blackBoard, whiteBoard]
 
 # print first board
 printBoard(mergeBoards(chessboard))
