@@ -8,21 +8,26 @@ from Rook import Rook
 from copy import deepcopy
 import colorama
 
-'''
-Import all the pieces
-to copy without problems import copy (deepcopy)
-for nice colors import colorama
-'''
+# Import all the pieces
+# To copy without problems import copy (deepcopy)
+# For nice colors import colorama
 
 
-'''
-Coordinates Are always given in the Format [x, y]
-But the Chess Array is made/printed in the Format whiteOrBlack, y, x 
-So change the coordinates when interchanging them between pieces and Chess Arrays 
-'''
+
+# Short explenation of the further code
+
+# The chessboards are always a 3D array, [which color to look for][y coordinate][x coordinate]
+# I seperated the white and black side, because it is easier for the overview and, also easier to look for the pieces you need/don't need
+# If you want to have just one board merge them with the mergeBoards(chessboard) function, with which you can merge them into one board
+
+# Coordinates on the other hand are always given in the Format [x, y]
+# So change the coordinates when interchanging them between pieces and Chess Arrays 
+
+
+
 
 moveOfPlayer = True  # True if its the turn of white and False if its blacks turn, because white starts its set to True
-listOfCommands = [   # list which includes all commands so that expanding is easier later 
+listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
 ["commands", "command", "help", "--help", "man", "?"], 
 ["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"], 
 ["show", "showboard", "board", "chessboard", "printboard"], 
@@ -32,15 +37,18 @@ listOfCommands = [   # list which includes all commands so that expanding is eas
 
 def printBoard(chessboard):
     '''
-    Prints the chessboard that gets inputed
+    Prints the chessboard that gets inputed and adds the seperators and the ABC and 123 indicators
     '''
     print("\n"*4)
+
     print("   ", end="", flush=True)
     for i in range(len(chessboard)):
         print(chr((i+1) + 64), end="  ", flush=True)
+
     print()
     print("  ", end="", flush=True)
     print("-"*(8*3+1), end="", flush=True)
+
     for i in range(len(chessboard)):
         print(f"\n{9-(i+1)} ", end="|", flush=True)
         for j in range(len(chessboard[i])):
@@ -52,6 +60,7 @@ def printBoard(chessboard):
                 print("\n", end="", flush=True)
                 print("  ", end="", flush=True)
                 print("-"*(8*3+1), end="", flush=True)
+
     else:
         print("\n", end="", flush=True)
         print("   ", end="", flush=True)
@@ -76,28 +85,28 @@ def printMoves(chessboard, whiteOrBlack):
 
 def createBoard():
     '''
-    Creates a new clean Board
+    Creates a new clean Board, but only a 2D one not a 3D one
     '''
+    # Create empty 1x8 board
     chessboard = [[]] * (8)
+    # Add 8 spaces to the first element
     chessboard[0].append(" "*8)
     for j in range(len(chessboard)):
         for i in range(len(chessboard[j])):
             chessboard[j] = [char for char in chessboard[j][i]]
 
-    for j in range(len(chessboard)):
-        for i in range(len(chessboard[j])):
-            pass
-        
     return chessboard
 
 def createWhiteSide():
     '''
     Creates the White Side of the chessboard with all its figures
     '''
+    # Create all the white pawns
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
         chessboard[6][i] = Pawn(i, 6, True)
 
+    #Create all the other white pieces
     chessboard[7][0] = Rook(0, 7, True)
     chessboard[7][1] = Knight(1, 7, True)
     chessboard[7][2] = Bishop(2, 7, True)
@@ -112,10 +121,12 @@ def createBlackSide():
     '''
     Creates the Black Side of the chessboard with all its figures
     '''
+    # Create all the black pawns 
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
         chessboard[1][i] = Pawn(i, 1, False)
-        
+
+    # Create all the other black pieces 
     chessboard[0][0] = Rook(0, 0, False)
     chessboard[0][1] = Knight(1, 0, False)
     chessboard[0][2] = Bishop(2, 0, False)
@@ -141,7 +152,7 @@ def mergeBoards(chessboard):
 
 def isValidInput(userInput):
     '''
-    Checks if the userInput is a valid Input or not 
+    Checks if the userInput is a valid Input or not (only checks if the input is 4 characters long and if the input is within the bounds of A-H and 1-8) 
     using unicode decodation
     '''
     if len(userInput) != 4:
@@ -161,10 +172,35 @@ def isPieceAtPos(positions, wholeChessboard):
     else:
         return False
 
+def doCommands(input, getIndex = False):
+    '''
+    Executes the given Input, if getIndex is True, it returns the index of the command in the array listOfCommands
+    If the input is not a command, it returns 2**31 (almost max integer limit) so that the program knows that there is no valid command to execute
+    '''
+    index = 2**31
+    for i in range(len(listOfCommands)):
+        if input in listOfCommands[i]:
+            index = i
+    if getIndex:
+        return index
+    else:
+        if index == 0:
+            showCommands() 
+        elif index == 1:
+            printMoves(chessboard, moveOfPlayer)
+        elif index == 2:
+            printBoard(mergeBoards(chessboard))
+        elif index == 3:
+            exit()
+        elif index == 4:
+            print("\n"*100)
+
 def getValidInput(moves):
     '''
     Gets a valid Input of the player and returns that, first it checks if the input is a command 
     if yes it first executes that command and asks again until it gets a right input
+    Includes the functions isPieceAtPos() and isValidInput(), for the commands is uses the function doCommands()
+    Returns the valid input convertet to numbers in the form [[x, y], [x, y]] 
     '''
     while True:
         if moveOfPlayer:
@@ -191,31 +227,9 @@ def getValidInput(moves):
             print("No valid input, try again")
     return convertedInput
 
-def doCommands(input, getIndex = False):
-    '''
-    CommandIndex is the index of the input in the variable listOfCommands
-    '''
-    index = 2**31
-    for i in range(len(listOfCommands)):
-        if input in listOfCommands[i]:
-            index = i
-    if getIndex:
-        return index
-    else:
-        if index == 0:
-            showCommands() 
-        elif index == 1:
-            printMoves(chessboard, moveOfPlayer)
-        elif index == 2:
-            printBoard(mergeBoards(chessboard))
-        elif index == 3:
-            exit()
-        elif index == 4:
-            print("\n"*100)
-
 def showCommands():
     '''
-    Shows all available commands inclusive a description of what they do
+    Shows all available commands including a little description of what they do
     '''
     print("\n\n\n\n\n\nCommands:\n\n")
     for i in range(len(listOfCommands)):
@@ -237,7 +251,7 @@ def showCommands():
 
 def convertInputToNumbers(userInput):
     '''
-    converts the input to numbers/coordinates using unicode 
+    Converts the userInput to numbers/coordinates using unicode 
     '''
     numbers = []
     numbers.append(ord(userInput[0])-97)
@@ -249,7 +263,7 @@ def convertInputToNumbers(userInput):
 
 def convertNumbersLikeInput(numbers):
     '''
-    converts the numbers to input using unicode 
+    Converts the numbers to input using unicode 
     '''
     chars = ""
     chars += chr(numbers[0][0]+97)
@@ -260,11 +274,11 @@ def convertNumbersLikeInput(numbers):
 
 def movePiece(coordinatesFrom, coordinatesTo, chessboard):
     '''
-    first checks which color is moving 
+    First checks which color is moving 
     and moves this piece from the coordinates coordinatesFrom 
     to the coordinatesTo on the same board 
     then setting the old coordinates to " " 
-    and setting the coordinateTo on the other board to " "
+    and setting the coordinateTo on the other board to " ", so that the other piece get deleted
     '''
     if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
         chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]
@@ -340,7 +354,8 @@ def resetAllCoordinates(chessboard):
 def removesStartPosition(moves):
     '''
     removes the first half of each item in the array so there are only the endpositions
-    example:    [[[0, 0], [1, 1]], [[1, 1], [2, 2]]]
+    example:
+    from        [[[0, 0], [1, 1]], [[1, 1], [2, 2]]]
     to:         [[1, 1], [2, 2]]
     '''
     for i in range(len(moves)):
@@ -348,7 +363,7 @@ def removesStartPosition(moves):
 
 def isCheck(chessboard, whiteOrBlack):
     '''
-    checks if the whiteOrBlack player is in check in the board chessboard
+    Checks if the whiteOrBlack player is in check on the board chessboard
     returns True or False
     '''
     moves = allMoves(chessboard, not whiteOrBlack, True, False)
@@ -368,7 +383,7 @@ def isCheck(chessboard, whiteOrBlack):
 
 def isCheckMate(moves):
     '''
-    checks if the whiteOrBlack player's king is checkmated(there is no possible move for him), 
+    Checks if there are any possible moves, if not, the player is checkmated
     returns True or False
     '''
     if moves == []: 
@@ -377,6 +392,9 @@ def isCheckMate(moves):
         return False
 
 def checkIfPawnAtEnd(chessboard, whiteOrBlack):
+    '''
+    Checks if a pawn is at the end of the board, if this is the case
+    this pawn gets replaced with a queen'''
     if whiteOrBlack:
         for i in range(len(chessboard[int(whiteOrBlack)][7])):
             if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][0][i]):
@@ -387,6 +405,7 @@ def checkIfPawnAtEnd(chessboard, whiteOrBlack):
             if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][7][i]):
                 chessboard[int(whiteOrBlack)][7][i] = " "
                 chessboard[int(whiteOrBlack)][7][i] = Queen(i, 7, True)
+
 def gameOver():
     '''
     Prints the Game Over statement
