@@ -12,5 +12,5 @@ You control the game within your console. You and your friend move your pieces w
 ## TODO
 ### Definetly wanting to add
 Add Rochade, Remis
-### If more than boring add
-Multiplayer (maybe), computer as opponent, GUI
+### What else I would like to add 
+Better Commands (grep moves of specific piece), Multiplayer (maybe), computer as opponent, GUI
