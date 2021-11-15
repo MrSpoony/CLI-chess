@@ -369,7 +369,7 @@ def isCheck(chessboard, whiteOrBlack):
     moves = allMoves(chessboard, not whiteOrBlack, True, False)
     for i in range(len(chessboard[int(whiteOrBlack)])):
         for j in range(len(chessboard[int(whiteOrBlack)][i])):
-            if str(chessboard[int(whiteOrBlack)][i][j]) in {colorama.Fore.BLUE + "WK" + colorama.Style.RESET_ALL, colorama.Fore.RED + "BK" + colorama.Style.RESET_ALL}:
+            if type(chessboard[int(whiteOrBlack)][i][j]) is King:
                 posKing = [j, i]
     movesWithoutDuplicates = []
     for move in moves:
@@ -394,17 +394,37 @@ def isCheckMate(moves):
 def checkIfPawnAtEnd(chessboard, whiteOrBlack):
     '''
     Checks if a pawn is at the end of the board, if this is the case
-    this pawn gets replaced with a queen'''
+    this pawn gets replaced with a new piece chosen by the current player'''
     if whiteOrBlack:
         for i in range(len(chessboard[int(whiteOrBlack)][7])):
             if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][0][i]):
                 chessboard[int(whiteOrBlack)][0][i] = " "
-                chessboard[int(whiteOrBlack)][0][i] = Queen(i, 0, True)
+                chessboard[int(whiteOrBlack)][0][i] = getValidInputForNewEndPiece()(i, 0, True)
     else:
         for i in range(len(chessboard[int(whiteOrBlack)][7])):
             if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][7][i]):
                 chessboard[int(whiteOrBlack)][7][i] = " "
-                chessboard[int(whiteOrBlack)][7][i] = Queen(i, 7, True)
+                chessboard[int(whiteOrBlack)][7][i] = getValidInputForNewEndPiece()(i, 7, True)
+
+def getValidInputForNewEndPiece():
+    '''
+    Gets a valid input for the checkIfPawnAtEnd method
+    returns a piece object wich then can be reused to initiate the new piece'''
+    print("Your pawn got to the end, you can choose a piece now:")
+    print("Which piece do you want? ")
+    print("[Q]ueen, k[N]ight, [B]ishop, [R]ook")
+    while True:
+        userInput = input().lower()
+        if userInput == "q" or userInput == "queen":
+            return Queen
+        elif userInput == "n" or userInput == "knight":
+            return Knight
+        elif userInput == "b" or userInput == "bishop":
+            return Bishop
+        elif userInput == "r" or userInput == "rook":
+            return Rook
+        else:
+            print("No valid piece, try again")
 
 def gameOver():
     '''
@@ -425,12 +445,14 @@ chessboard = [blackBoard, whiteBoard]
 printBoard(mergeBoards(chessboard))
 
 while True:
+    '''
+    Main loop which gets called every turn
+    '''
     possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
     if isCheckMate(possibleMoves):
         gameOver()
-    playerMove = getValidInput(possibleMoves)
-    chessboard = movePiece(playerMove[0], playerMove[1], chessboard)
+    playersMove = getValidInput(possibleMoves)
+    chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
     checkIfPawnAtEnd(chessboard, moveOfPlayer)
     printBoard(mergeBoards(chessboard))
     moveOfPlayer = not moveOfPlayer
-    possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
