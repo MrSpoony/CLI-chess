@@ -13,27 +13,27 @@ class Pawn(Piece):
         self.availableMoves = []
         if self.color:
             if self.isAvailable(self.pos[0], self.pos[1] - 1, chessboard[int(self.color)]):
-                if self.isAvailableOpponent(self.pos[0], self.pos[1] - 1, chessboard[int(not self.color)]):
+                if self.isAvailable(self.pos[0], self.pos[1] - 1, chessboard[int(not self.color)]):
                     self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0], self.pos[1] - 1]])
-            if self.pos[1] == 6:
+            if not self.moved:
                 if self.isAvailable(self.pos[0], self.pos[1] - 2, chessboard[int(self.color)]):
-                    if self.isAvailableOpponent(self.pos[0], self.pos[1] - 2, chessboard[int(not self.color)]):
+                    if self.isAvailable(self.pos[0], self.pos[1] - 2, chessboard[int(not self.color)]):
                         self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0], self.pos[1] - 2]])
             for i in range(-1, 2, 2):
                 if self.isAvailable(self.pos[0] + i, self.pos[1] - 1, chessboard[int(self.color)]):
-                    if not self.isAvailableOpponent(self.pos[0] + i, self.pos[1] - 1, chessboard[int(not self.color)]):
+                    if not self.isAvailable(self.pos[0] + i, self.pos[1] - 1, chessboard[int(not self.color)]):
                         self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0] + i, self.pos[1] - 1]])
             return self.availableMoves
         else:
             if self.isAvailable(self.pos[0], self.pos[1] + 1, chessboard[int(self.color)]):
-                if self.isAvailableOpponent(self.pos[0], self.pos[1] + 1, chessboard[int(not self.color)]):
+                if self.isAvailable(self.pos[0], self.pos[1] + 1, chessboard[int(not self.color)]):
                     self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0], self.pos[1] + 1]])
-            if self.pos[1] == 1:
+            if not self.moved:
                 if self.isAvailable(self.pos[0], self.pos[1] + 2, chessboard[int(self.color)]):
-                    if self.isAvailableOpponent(self.pos[0], self.pos[1] + 2, chessboard[int(not self.color)]):
+                    if self.isAvailable(self.pos[0], self.pos[1] + 2, chessboard[int(not self.color)]):
                         self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0], self.pos[1] + 2]])
             for i in range(-1, 2, 2):
                 if self.isAvailable(self.pos[0] + i, self.pos[1] + 1, chessboard[int(self.color)]):
-                    if not self.isAvailableOpponent(self.pos[0] + i, self.pos[1] + 1, chessboard[int(not self.color)]):
+                    if not self.isAvailable(self.pos[0] + i, self.pos[1] + 1, chessboard[int(not self.color)]):
                         self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0] + i, self.pos[1] + 1]])
             return self.availableMoves

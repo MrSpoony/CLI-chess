@@ -282,16 +282,18 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
     '''
     if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
         chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]
+        chessboard[0][coordinatesTo[1]][coordinatesTo[0]].moved = True
         chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] = " "
         chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = " "
         chessboard[0][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
     elif chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
         chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]]
+        chessboard[1][coordinatesTo[1]][coordinatesTo[0]].moved = True
         chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] = " "
         chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = " "
         chessboard[1][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
     else:
-        raise("The piece you are trying to move does not exist")
+        raise("The piece you are trying to move does not exist\nThis should never be executed or my getValidInput method does something wrong")
     return(chessboard)
 
 def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = True):
@@ -428,7 +430,7 @@ def getValidInputForNewEndPiece():
 
 def gameOver():
     '''
-    Prints the Game Over statement
+    Prints the Game Over statement and exits the program
     '''
     if moveOfPlayer:
         print("GameOver\nBlack won! GG")
