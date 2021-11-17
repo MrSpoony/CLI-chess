@@ -296,6 +296,11 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
         raise("The piece you are trying to move does not exist\nThis should never be executed or my getValidInput method does something wrong")
     return(chessboard)
 
+def isTurnRochade(chessboard, whiteOrBlack, possibleMoves):
+    for i in possibleMoves:
+        if [[],[]]:
+            pass
+
 def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = True):
     '''
     Returns a list containing all the moves which are returned by all the pieces of the whiteOrBlack player. 
