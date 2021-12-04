@@ -9,8 +9,19 @@ python3 main.py
 ## Controls
 You control the game within your console. You and your friend move your pieces with inputs in the format a1a2
 
+
 ## TODO
 ### Definetly wanting to add
-Add Rochade, Remis
-### What else I would like to add 
-Better Commands (grep moves of specific piece), Multiplayer (maybe), computer as opponent, GUI
+* Remis
+### What else I would like to add if I would have the time
+* Better Commands (grep moves of specific piece)
+* Multiplayer 
+* Computer as opponent
+* GUI (but probably not since it's a CLI-Chess project)
+
+## Done
+* Moving pieces
+* 'eating' pieces
+* not moving pieces when they set you in check
+* game ends when King is checkmated
+* rochade
