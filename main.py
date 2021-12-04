@@ -244,7 +244,8 @@ def showCommands():
     '''
     Shows all available commands including a little description of what they do
     '''
-    print("\n\n\n\n\n\nCommands:\n\n")
+    clear()
+    print("Commands:\n")
     for i in range(len(listOfCommands)):
         for j in range(len(listOfCommands[i])):
             print(listOfCommands[i][j], end="", flush=True)
@@ -257,6 +258,8 @@ def showCommands():
                     print("\t\t\tExits the program, DOES QUIT YOUR MATCH! ")
                 elif i == 3:
                     print("\t\t\tShows the current chessboard again. ")
+                elif i == 4:
+                    print("\t\t\tClears the commandline")
             elif j == len(listOfCommands[i])-1:
                 print("\n")
             else:
