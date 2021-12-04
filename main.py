@@ -5,41 +5,62 @@ from Knight import Knight
 from Pawn import Pawn
 from Rook import Rook
 from copy import deepcopy
+from os import system, name
 import colorama
 
-'''
-Import all the pieces
-to copy without problems import copy (deepcopy)
-for nice colors import colorama
-'''
+# Import all the pieces
+# To copy without problems import copy.deepcopy
+# To clear the commandline import os.system
+# To know which system you're on import os.name
+# For nice colors import colorama
 
 
-'''
-Coordinates Are always given in the Format [x, y]
-But the Chess Array is made/printed in the Format whiteOrBlack, y, x 
-So change the coordinates when interchanging them between pieces and Chess Arrays 
-'''
+
+# Short explenation of the further code
+
+# The chessboards are always a 3D array chessboard[which color to look for][y coordinate][x coordinate]
+# I seperated the white and black side,
+# because it is easier for the overview and
+# also easier to look for the pieces you need / don't need
+# If you want to have just one board merge them with the mergeBoards(chessboard) function,
+# with which you can merge them into one board
+
+#Coordinates on the other hand are always given in the Format[x, y]
+# So change the coordinates when interchanging them between pieces and Chess / Arrays 
+
+
+
 
 moveOfPlayer = True  # True if its the turn of white and False if its blacks turn, because white starts its set to True
-listOfCommands = [   # list which includes all commands so that expanding is easier later 
-["commands", "command", "help", "--help", "man", "?"], 
-["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"], 
-["show", "showboard", "board", "chessboard", "printboard"], 
-["exit", "quit", ":wq", "leave", ":q", "q"], 
-["clear", "cls", "c"]] 
+listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
+["commands", "command", "help", "--help", "man", "?"],
+["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
+["show", "showboard", "board", "chessboard", "printboard"],
+["exit", "quit", ":wq", "leave", ":q", "q"],
+["clear", "cls", "c"]]
 
+def clear():
+    if name == 'nt':
+        _ = system('cls')
+    else:
+        _ = system('clear')
 
 def printBoard(chessboard):
     '''
-    Prints the chessboard that gets inputed
+    Clears the commandline,
+    prints the chessboard that gets inputed and adds the seperators and the ABC and 123 indicators
     '''
-    print("\n"*4)
+
+    clear()
+
     print("   ", end="", flush=True)
     for i in range(len(chessboard)):
         print(chr((i+1) + 64), end="  ", flush=True)
+
     print()
     print("  ", end="", flush=True)
     print("-"*(8*3+1), end="", flush=True)
+
     for i in range(len(chessboard)):
         print(f"\n{9-(i+1)} ", end="|", flush=True)
         for j in range(len(chessboard[i])):
@@ -51,6 +72,7 @@ def printBoard(chessboard):
                 print("\n", end="", flush=True)
                 print("  ", end="", flush=True)
                 print("-"*(8*3+1), end="", flush=True)
+
     else:
         print("\n", end="", flush=True)
         print("   ", end="", flush=True)
@@ -75,28 +97,28 @@ def printMoves(chessboard, whiteOrBlack):
 
 def createBoard():
     '''
-    Creates a new clean Board
+    Creates a new clean Board, but only a 2D one not a 3D one
     '''
+    # Create empty 1x8 board
     chessboard = [[]] * (8)
+    # Add 8 spaces to the first element
     chessboard[0].append(" "*8)
     for j in range(len(chessboard)):
         for i in range(len(chessboard[j])):
             chessboard[j] = [char for char in chessboard[j][i]]
 
-    for j in range(len(chessboard)):
-        for i in range(len(chessboard[j])):
-            pass
-        
     return chessboard
 
 def createWhiteSide():
     '''
     Creates the White Side of the chessboard with all its figures
     '''
+    # Create all the white pawns
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
         chessboard[6][i] = Pawn(i, 6, True)
 
+    # Create all the other white pieces
     chessboard[7][0] = Rook(0, 7, True)
     chessboard[7][1] = Knight(1, 7, True)
     chessboard[7][2] = Bishop(2, 7, True)
@@ -111,10 +133,12 @@ def createBlackSide():
     '''
     Creates the Black Side of the chessboard with all its figures
     '''
+    # Create all the black pawns 
     chessboard = createBoard()
     for i in range(len(chessboard[6])):
         chessboard[1][i] = Pawn(i, 1, False)
-        
+
+    # Create all the other black pieces 
     chessboard[0][0] = Rook(0, 0, False)
     chessboard[0][1] = Knight(1, 0, False)
     chessboard[0][2] = Bishop(2, 0, False)
@@ -140,7 +164,7 @@ def mergeBoards(chessboard):
 
 def isValidInput(userInput):
     '''
-    Checks if the userInput is a valid Input or not 
+    Checks if the userInput is a valid Input or not (only checks if the input is 4 characters long and if the input is within the bounds of A-H and 1-8) 
     using unicode decodation
     '''
     if len(userInput) != 4:
@@ -160,10 +184,36 @@ def isPieceAtPos(positions, wholeChessboard):
     else:
         return False
 
+def doCommands(input, getIndex = False):
+    '''
+    Executes the given Input, if getIndex is True, it returns the index of the command in the array listOfCommands
+    If the input is not a command, it returns 2**31 (almost max integer limit) so that the program knows that there is no valid command to execute
+    '''
+    index = 2**31
+    for i in range(len(listOfCommands)):
+        if input in listOfCommands[i]:
+            index = i
+    if getIndex:
+        return index
+    else:
+        if index == 0:
+            showCommands() 
+        elif index == 1:
+            printMoves(chessboard, moveOfPlayer)
+        elif index == 2:
+            printBoard(mergeBoards(chessboard))
+        elif index == 3:
+            exit()
+        elif index == 4:
+            clear()
+
+
 def getValidInput(moves):
     '''
     Gets a valid Input of the player and returns that, first it checks if the input is a command 
     if yes it first executes that command and asks again until it gets a right input
+    Includes the functions isPieceAtPos() and isValidInput(), for the commands is uses the function doCommands()
+    Returns the valid input convertet to numbers in the form [[x, y], [x, y]] 
     '''
     while True:
         if moveOfPlayer:
@@ -190,31 +240,9 @@ def getValidInput(moves):
             print("No valid input, try again")
     return convertedInput
 
-def doCommands(input, getIndex = False):
-    '''
-    CommandIndex is the index of the input in the variable listOfCommands
-    '''
-    index = 2**31
-    for i in range(len(listOfCommands)):
-        if input in listOfCommands[i]:
-            index = i
-    if getIndex:
-        return index
-    else:
-        if index == 0:
-            showCommands() 
-        elif index == 1:
-            printMoves(chessboard, moveOfPlayer)
-        elif index == 2:
-            printBoard(mergeBoards(chessboard))
-        elif index == 3:
-            exit()
-        elif index == 4:
-            print("\n"*100)
-
 def showCommands():
     '''
-    Shows all available commands inclusive a description of what they do
+    Shows all available commands including a little description of what they do
     '''
     print("\n\n\n\n\n\nCommands:\n\n")
     for i in range(len(listOfCommands)):
@@ -236,7 +264,7 @@ def showCommands():
 
 def convertInputToNumbers(userInput):
     '''
-    converts the input to numbers/coordinates using unicode 
+    Converts the userInput to numbers/coordinates using unicode 
     '''
     numbers = []
     numbers.append(ord(userInput[0])-97)
@@ -248,7 +276,7 @@ def convertInputToNumbers(userInput):
 
 def convertNumbersLikeInput(numbers):
     '''
-    converts the numbers to input using unicode 
+    Converts the numbers to input using unicode 
     '''
     chars = ""
     chars += chr(numbers[0][0]+97)
@@ -257,27 +285,76 @@ def convertNumbersLikeInput(numbers):
     chars += str(8 - numbers[1][1])
     return chars
 
+def swapPieces(chessboard, whiteOrBlack, fromX, fromY, toX, toY):
+    '''
+    Swaps two pieces,
+    first sets the moved variable of the piece to True
+    then it moves the pieces,
+    sets the "old" Piece to " ",
+    sets the "new" position on the other board to " " and
+    sets the new coordinates of the piece'''
+    chessboard[whiteOrBlack][fromY][fromX].moved = True
+    chessboard[whiteOrBlack][toY][toX] = chessboard[whiteOrBlack][fromY][fromX]
+    chessboard[whiteOrBlack][fromY][fromX] = " "
+    chessboard[int(not bool(whiteOrBlack))][toY][toX] = " "
+    chessboard[whiteOrBlack][toY][toX].setNewCoordinates(chessboard)
+    return chessboard
+
 def movePiece(coordinatesFrom, coordinatesTo, chessboard):
     '''
-    first checks which color is moving 
-    and moves this piece from the coordinates coordinatesFrom 
-    to the coordinatesTo on the same board 
-    then setting the old coordinates to " " 
-    and setting the coordinateTo on the other board to " "
+    First checks if the Move is a rochade
+    if yes it moves the King to it's new position, then the rook
+    if no it checks which piece is moving and moves it
     '''
-    if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
-        chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]
-        chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] = " "
-        chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = " "
-        chessboard[0][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
-    elif chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
-        chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]]
-        chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] = " "
-        chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = " "
-        chessboard[1][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
+
+    # Check on both sides if the move is a rochade
+    rochade = isTurnRochade(chessboard, False, coordinatesFrom, coordinatesTo)
+    if not rochade:
+        rochade = isTurnRochade(chessboard, True, coordinatesFrom, coordinatesTo)
+
+    if rochade:
+        # King to new pos
+        chessboard = swapPieces(chessboard, rochade[0], coordinatesFrom[0], coordinatesFrom[1], coordinatesTo[0], coordinatesTo[1])
+        # Rook to new pos
+        if rochade[1]:
+            if rochade[0]:
+                chessboard = swapPieces(chessboard, 1, 0, 7, 3, 7)
+            else:
+                chessboard = swapPieces(chessboard, 0, 0, 0, 3, 0)
+        else:
+            if rochade[0]:
+                chessboard = swapPieces(chessboard, 1, 7, 7, 5, 7)
+            else:
+                chessboard = swapPieces(chessboard, 0, 0, 7, 5, 0)
     else:
-        raise("The piece you are trying to move does not exist")
+        if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
+            chessboard = swapPieces(chessboard, 0, coordinatesFrom[0], coordinatesFrom[1], coordinatesTo[0], coordinatesTo[1])
+        elif chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
+            chessboard = swapPieces(chessboard, 1, coordinatesFrom[0], coordinatesFrom[1], coordinatesTo[0], coordinatesTo[1])
+        else:
+            print("The piece you are trying to move does not exist\nThis should never be executed or my getValidInput method does something wrong")
+            exit()
     return(chessboard)
+
+def isTurnRochade(chessboard, whiteOrBlack, coordinatesFrom, coordinatesTo):
+    '''
+    Checks if the current move is a Rochade
+    returns False if not, otherwise returns a list of [colorOfRochadeMove, isToTheLeft]
+    when isToTheLeftIs 0 if the rochade is to the right
+    if the rochade is to the left isToTheLeft is 1'''
+    if whiteOrBlack:
+        if type(chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]]) is King:
+            if coordinatesTo[0] == coordinatesFrom[0]+2:
+                return [1, 0]
+            elif coordinatesTo[0] == coordinatesFrom[0]-2:
+                return [1, 1]
+    else:
+        if type(chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]) is King:
+            if coordinatesTo[0] == coordinatesFrom[0]+2:
+               return [0, 0]
+            elif coordinatesTo[0] == coordinatesFrom[0]-2:
+                return [0, 1]
+    return False
 
 def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = True):
     '''
@@ -339,7 +416,8 @@ def resetAllCoordinates(chessboard):
 def removesStartPosition(moves):
     '''
     removes the first half of each item in the array so there are only the endpositions
-    example:    [[[0, 0], [1, 1]], [[1, 1], [2, 2]]]
+    example:
+    from        [[[0, 0], [1, 1]], [[1, 1], [2, 2]]]
     to:         [[1, 1], [2, 2]]
     '''
     for i in range(len(moves)):
@@ -347,13 +425,13 @@ def removesStartPosition(moves):
 
 def isCheck(chessboard, whiteOrBlack):
     '''
-    checks if the whiteOrBlack player is in check in the board chessboard
+    Checks if the whiteOrBlack player is in check on the board chessboard
     returns True or False
     '''
     moves = allMoves(chessboard, not whiteOrBlack, True, False)
     for i in range(len(chessboard[int(whiteOrBlack)])):
         for j in range(len(chessboard[int(whiteOrBlack)][i])):
-            if str(chessboard[int(whiteOrBlack)][i][j]) in {colorama.Fore.BLUE + "WK" + colorama.Style.RESET_ALL, colorama.Fore.RED + "BK" + colorama.Style.RESET_ALL}:
+            if type(chessboard[int(whiteOrBlack)][i][j]) is King:
                 posKing = [j, i]
     movesWithoutDuplicates = []
     for move in moves:
@@ -367,7 +445,7 @@ def isCheck(chessboard, whiteOrBlack):
 
 def isCheckMate(moves):
     '''
-    checks if the whiteOrBlack player's king is checkmated(there is no possible move for him), 
+    Checks if there are any possible moves, if not, the player is checkmated
     returns True or False
     '''
     if moves == []: 
@@ -375,9 +453,44 @@ def isCheckMate(moves):
     else:
         return False
 
+def checkIfPawnAtEnd(chessboard, whiteOrBlack):
+    '''
+    Checks if a pawn is at the end of the board, if this is the case
+    this pawn gets replaced with a new piece chosen by the current player'''
+    if whiteOrBlack:
+        for i in range(len(chessboard[int(whiteOrBlack)][7])):
+            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][0][i]):
+                chessboard[int(whiteOrBlack)][0][i] = " "
+                chessboard[int(whiteOrBlack)][0][i] = getValidInputForNewEndPiece()(i, 0, True)
+    else:
+        for i in range(len(chessboard[int(whiteOrBlack)][7])):
+            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][7][i]):
+                chessboard[int(whiteOrBlack)][7][i] = " "
+                chessboard[int(whiteOrBlack)][7][i] = getValidInputForNewEndPiece()(i, 7, True)
+
+def getValidInputForNewEndPiece():
+    '''
+    Gets a valid input for the checkIfPawnAtEnd method
+    returns a piece object wich then can be reused to initiate the new piece'''
+    print("Your pawn got to the end, you can choose a piece now:")
+    print("Which piece do you want? ")
+    print("[Q]ueen, k[N]ight, [B]ishop, [R]ook")
+    while True:
+        userInput = input().lower()
+        if userInput == "q" or userInput == "queen":
+            return Queen
+        elif userInput == "n" or userInput == "knight":
+            return Knight
+        elif userInput == "b" or userInput == "bishop":
+            return Bishop
+        elif userInput == "r" or userInput == "rook":
+            return Rook
+        else:
+            print("No valid piece, try again")
+
 def gameOver():
     '''
-    Prints the Game Over statement
+    Prints the Game Over statement and exits the program
     '''
     if moveOfPlayer:
         print("GameOver\nBlack won! GG")
@@ -385,20 +498,23 @@ def gameOver():
         print("GameOver\nWhite won! GG")
     exit()
 
-# Create the two boards and merge them
+#Create the two boards and merge them
 whiteBoard = createWhiteSide()
 blackBoard = createBlackSide()
 chessboard = [blackBoard, whiteBoard]
 
-# print first board
+#print first board
 printBoard(mergeBoards(chessboard))
 
 while True:
+    '''
+    Main loop which gets called every turn
+    '''
     possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
     if isCheckMate(possibleMoves):
         gameOver()
-    playerMove = getValidInput(possibleMoves)
-    chessboard = movePiece(playerMove[0], playerMove[1], chessboard)
+    playersMove = getValidInput(possibleMoves)
+    chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
+    checkIfPawnAtEnd(chessboard, moveOfPlayer)
     printBoard(mergeBoards(chessboard))
     moveOfPlayer = not moveOfPlayer
-    possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
