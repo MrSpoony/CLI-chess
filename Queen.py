@@ -3,13 +3,19 @@ import colorama
 class Queen(Piece):
 
     def __init__(self, xPos, yPos, color):
+        '''
+        New Queen Piece at position xPos, yPos, and the color color'''
         super().__init__(xPos, yPos, color)
         self.char += "Q" + colorama.Style.RESET_ALL
 
     def __str__(self):
+        '''
+        Sets the Sring of the Object to it's char so I can access it with str()'''
         return self.char
 
     def checkForAvailableMoves(self, chessboard):
+        '''
+        Checks for the available moves from this piece'''
         self.availableMoves = []
         moveOffsetOptions = [-1, 0, 1]
         for i in range(len(moveOffsetOptions)):

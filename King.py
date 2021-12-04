@@ -4,13 +4,19 @@ import colorama
 class King(Piece):
 
     def __init__(self, xPos, yPos, color):
+        '''
+        New King Piece at position xPos, yPos, and the color color'''
         super().__init__(xPos, yPos, color)
         self.char += "K" + colorama.Style.RESET_ALL
 
     def __str__(self):
+        '''
+        Sets the Sring of the Object to it's char so I can access it with str()'''
         return self.char
-        
+
     def checkForAvailableMoves(self, chessboard):
+        '''
+        Checks for the available moves from this piece'''
         self.availableMoves = []
         moveOffsetOptions = [-1, 0, 1]
         for i in range(len(moveOffsetOptions)):
@@ -23,6 +29,9 @@ class King(Piece):
         return self.availableMoves
 
     def checkForRochade(self, chessboard):
+        '''
+        Checks if there is a rochade possible/available
+        if yes then it appends the rochade moves to self.availableMoves'''
         if not self.moved:
             if self.color:
                 if type(chessboard[int(self.color)][7][0]) is Rook:
@@ -32,7 +41,7 @@ class King(Piece):
                                 self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0] - 2, self.pos[1]]])
                 if type(chessboard[int(self.color)][7][7]) is Rook:
                     if not chessboard[int(self.color)][7][7].moved:
-                        if chessboard[int(self.color)][7][6] == " " and chessboard[int(self.color)][7][5]:
+                        if chessboard[int(self.color)][7][6] == " " and chessboard[int(self.color)][7][5] == " ":
                             if chessboard[int(not self.color)][7][6] == " " and chessboard[int(not self.color)][7][5]:
                                 self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0] + 2, self.pos[1]]])
             else:
@@ -43,6 +52,6 @@ class King(Piece):
                                 self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0] - 2, self.pos[1]]])
                 if type(chessboard[int(self.color)][0][7]) is Rook:
                     if not chessboard[int(self.color)][0][7].moved:
-                        if chessboard[int(self.color)][0][6] == " " and chessboard[int(self.color)][0][5]:
+                        if chessboard[int(self.color)][0][6] == " " and chessboard[int(self.color)][0][5] == " ":
                             if chessboard[int(not self.color)][0][6] == " " and chessboard[int(not self.color)][0][5]:
                                 self.availableMoves.append([[self.pos[0], self.pos[1]], [self.pos[0] + 2, self.pos[1]]])

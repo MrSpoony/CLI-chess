@@ -2,11 +2,17 @@ import colorama
 class Piece:
 
     def __init__(self, xPos, yPos, color):
+        '''
+        Initiates the new piece with the variables
+        self.pos => position in array [x, y]
+        selt.color => color as bool
+        self.availableMoves => [] empty at beginning but gets populated with moves later in function CheckForAvailableMoves
+        self.moved => False at the beginning gets changed to true when moved
+        self.char => W/B at the beginning gets changed to WK BQ etc. in the specific piece Classes, W for white B for black'''
         self.pos = [xPos, yPos]
         self.color = color
         self.availableMoves = []
         self.moved = False
-        # so you know which color it is, there is a blue "W" in front if it's a piece of white and the opposite with a red "B" for black 
         if self.color:
             self.char = colorama.Fore.BLUE + "W"
         else:
@@ -22,7 +28,7 @@ class Piece:
                 return False
         else:
             return False
-            
+
     def setNewCoordinates(self, chessboard):
         '''
         Resets all the coordinates

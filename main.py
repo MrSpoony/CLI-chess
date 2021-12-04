@@ -1,4 +1,3 @@
-from colorama.ansi import Fore
 from King import King
 from Queen import Queen
 from Bishop import Bishop
@@ -6,40 +5,53 @@ from Knight import Knight
 from Pawn import Pawn
 from Rook import Rook
 from copy import deepcopy
+from os import system, name
 import colorama
 
 # Import all the pieces
-# To copy without problems import copy (deepcopy)
+# To copy without problems import copy.deepcopy
+# To clear the commandline import os.system
+# To know which system you're on import os.name
 # For nice colors import colorama
 
 
 
 # Short explenation of the further code
 
-# The chessboards are always a 3D array, [which color to look for][y coordinate][x coordinate]
-# I seperated the white and black side, because it is easier for the overview and, also easier to look for the pieces you need/don't need
-# If you want to have just one board merge them with the mergeBoards(chessboard) function, with which you can merge them into one board
+# The chessboards are always a 3D array chessboard[which color to look for][y coordinate][x coordinate]
+# I seperated the white and black side,
+# because it is easier for the overview and
+# also easier to look for the pieces you need / don't need
+# If you want to have just one board merge them with the mergeBoards(chessboard) function,
+# with which you can merge them into one board
 
-# Coordinates on the other hand are always given in the Format [x, y]
-# So change the coordinates when interchanging them between pieces and Chess Arrays 
+#Coordinates on the other hand are always given in the Format[x, y]
+# So change the coordinates when interchanging them between pieces and Chess / Arrays 
 
 
 
 
 moveOfPlayer = True  # True if its the turn of white and False if its blacks turn, because white starts its set to True
 listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
-["commands", "command", "help", "--help", "man", "?"], 
-["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"], 
-["show", "showboard", "board", "chessboard", "printboard"], 
-["exit", "quit", ":wq", "leave", ":q", "q"], 
-["clear", "cls", "c"]] 
+["commands", "command", "help", "--help", "man", "?"],
+["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
+["show", "showboard", "board", "chessboard", "printboard"],
+["exit", "quit", ":wq", "leave", ":q", "q"],
+["clear", "cls", "c"]]
 
+def clear():
+    if name == 'nt':
+        _ = system('cls')
+    else:
+        _ = system('clear')
 
 def printBoard(chessboard):
     '''
-    Prints the chessboard that gets inputed and adds the seperators and the ABC and 123 indicators
+    Clears the commandline,
+    prints the chessboard that gets inputed and adds the seperators and the ABC and 123 indicators
     '''
-    print("\n"*4)
+
+    clear()
 
     print("   ", end="", flush=True)
     for i in range(len(chessboard)):
@@ -106,7 +118,7 @@ def createWhiteSide():
     for i in range(len(chessboard[6])):
         chessboard[6][i] = Pawn(i, 6, True)
 
-    #Create all the other white pieces
+    # Create all the other white pieces
     chessboard[7][0] = Rook(0, 7, True)
     chessboard[7][1] = Knight(1, 7, True)
     chessboard[7][2] = Bishop(2, 7, True)
@@ -193,7 +205,8 @@ def doCommands(input, getIndex = False):
         elif index == 3:
             exit()
         elif index == 4:
-            print("\n"*100)
+            clear()
+
 
 def getValidInput(moves):
     '''
@@ -272,34 +285,76 @@ def convertNumbersLikeInput(numbers):
     chars += str(8 - numbers[1][1])
     return chars
 
+def swapPieces(chessboard, whiteOrBlack, fromX, fromY, toX, toY):
+    '''
+    Swaps two pieces,
+    first sets the moved variable of the piece to True
+    then it moves the pieces,
+    sets the "old" Piece to " ",
+    sets the "new" position on the other board to " " and
+    sets the new coordinates of the piece'''
+    chessboard[whiteOrBlack][fromY][fromX].moved = True
+    chessboard[whiteOrBlack][toY][toX] = chessboard[whiteOrBlack][fromY][fromX]
+    chessboard[whiteOrBlack][fromY][fromX] = " "
+    chessboard[int(not bool(whiteOrBlack))][toY][toX] = " "
+    chessboard[whiteOrBlack][toY][toX].setNewCoordinates(chessboard)
+    return chessboard
+
 def movePiece(coordinatesFrom, coordinatesTo, chessboard):
     '''
-    First checks which color is moving 
-    and moves this piece from the coordinates coordinatesFrom 
-    to the coordinatesTo on the same board 
-    then setting the old coordinates to " " 
-    and setting the coordinateTo on the other board to " ", so that the other piece get deleted
+    First checks if the Move is a rochade
+    if yes it moves the King to it's new position, then the rook
+    if no it checks which piece is moving and moves it
     '''
-    if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
-        chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]
-        chessboard[0][coordinatesTo[1]][coordinatesTo[0]].moved = True
-        chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] = " "
-        chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = " "
-        chessboard[0][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
-    elif chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
-        chessboard[1][coordinatesTo[1]][coordinatesTo[0]] = chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]]
-        chessboard[1][coordinatesTo[1]][coordinatesTo[0]].moved = True
-        chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] = " "
-        chessboard[0][coordinatesTo[1]][coordinatesTo[0]] = " "
-        chessboard[1][coordinatesTo[1]][coordinatesTo[0]].setNewCoordinates(chessboard)
+
+    # Check on both sides if the move is a rochade
+    rochade = isTurnRochade(chessboard, False, coordinatesFrom, coordinatesTo)
+    if not rochade:
+        rochade = isTurnRochade(chessboard, True, coordinatesFrom, coordinatesTo)
+
+    if rochade:
+        # King to new pos
+        chessboard = swapPieces(chessboard, rochade[0], coordinatesFrom[0], coordinatesFrom[1], coordinatesTo[0], coordinatesTo[1])
+        # Rook to new pos
+        if rochade[1]:
+            if rochade[0]:
+                chessboard = swapPieces(chessboard, 1, 0, 7, 3, 7)
+            else:
+                chessboard = swapPieces(chessboard, 0, 0, 0, 3, 0)
+        else:
+            if rochade[0]:
+                chessboard = swapPieces(chessboard, 1, 7, 7, 5, 7)
+            else:
+                chessboard = swapPieces(chessboard, 0, 0, 7, 5, 0)
     else:
-        raise("The piece you are trying to move does not exist\nThis should never be executed or my getValidInput method does something wrong")
+        if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
+            chessboard = swapPieces(chessboard, 0, coordinatesFrom[0], coordinatesFrom[1], coordinatesTo[0], coordinatesTo[1])
+        elif chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
+            chessboard = swapPieces(chessboard, 1, coordinatesFrom[0], coordinatesFrom[1], coordinatesTo[0], coordinatesTo[1])
+        else:
+            print("The piece you are trying to move does not exist\nThis should never be executed or my getValidInput method does something wrong")
+            exit()
     return(chessboard)
 
-def isTurnRochade(chessboard, whiteOrBlack, possibleMoves):
-    for i in possibleMoves:
-        if [[],[]]:
-            pass
+def isTurnRochade(chessboard, whiteOrBlack, coordinatesFrom, coordinatesTo):
+    '''
+    Checks if the current move is a Rochade
+    returns False if not, otherwise returns a list of [colorOfRochadeMove, isToTheLeft]
+    when isToTheLeftIs 0 if the rochade is to the right
+    if the rochade is to the left isToTheLeft is 1'''
+    if whiteOrBlack:
+        if type(chessboard[1][coordinatesFrom[1]][coordinatesFrom[0]]) is King:
+            if coordinatesTo[0] == coordinatesFrom[0]+2:
+                return [1, 0]
+            elif coordinatesTo[0] == coordinatesFrom[0]-2:
+                return [1, 1]
+    else:
+        if type(chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]]) is King:
+            if coordinatesTo[0] == coordinatesFrom[0]+2:
+               return [0, 0]
+            elif coordinatesTo[0] == coordinatesFrom[0]-2:
+                return [0, 1]
+    return False
 
 def allMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosition = True):
     '''
@@ -443,12 +498,12 @@ def gameOver():
         print("GameOver\nWhite won! GG")
     exit()
 
-# Create the two boards and merge them
+#Create the two boards and merge them
 whiteBoard = createWhiteSide()
 blackBoard = createBlackSide()
 chessboard = [blackBoard, whiteBoard]
 
-# print first board
+#print first board
 printBoard(mergeBoards(chessboard))
 
 while True:
