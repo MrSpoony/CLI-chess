@@ -9,10 +9,13 @@ python3 main.py
 ## Controls
 You control the game within your console. You and your friend move your pieces with inputs in the format a1a2
 
+Write commands to see all the available commands
+
 
 ## TODO
 ### Definetly wanting to add
 * Remis
+* Undo moves
 ### What else I would like to add if I would have the time
 * Better Commands (grep moves of specific piece)
 * Multiplayer 
