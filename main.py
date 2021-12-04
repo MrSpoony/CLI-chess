@@ -1,4 +1,5 @@
 from King import King
+
 from Queen import Queen
 from Bishop import Bishop
 from Knight import Knight
@@ -33,11 +34,12 @@ import colorama
 
 moveOfPlayer = True  # True if its the turn of white and False if its blacks turn, because white starts its set to True
 listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
-["commands", "command", "help", "--help", "man", "?"],
-["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
-["show", "showboard", "board", "chessboard", "printboard"],
-["exit", "quit", ":wq", "leave", ":q", "q"],
-["clear", "cls", "c"]]
+    ["commands", "command", "help", "--help", "man", "?"],
+    ["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
+    ["show", "showboard", "board", "chessboard", "printboard"],
+    ["undo", "revoke"],
+    ["exit", "quit", ":wq", "leave", ":q", "q"],
+    ["clear", "cls", "c"]]
 
 def clear():
     if name == 'nt':
@@ -203,8 +205,10 @@ def doCommands(input, getIndex = False):
         elif index == 2:
             printBoard(mergeBoards(chessboard))
         elif index == 3:
-            exit()
+            undoMoves(history, 1)
         elif index == 4:
+            exit()
+        elif index == 5:
             clear()
 
 
@@ -215,6 +219,10 @@ def getValidInput(moves):
     Includes the functions isPieceAtPos() and isValidInput(), for the commands is uses the function doCommands()
     Returns the valid input convertet to numbers in the form [[x, y], [x, y]] 
     '''
+    # Whyever my code does not work if don't use the moves variable so I added a simple request to shut that warning
+    if moves:
+        pass
+
     while True:
         if moveOfPlayer:
             print("Whites turn: ")
@@ -222,13 +230,16 @@ def getValidInput(moves):
             print("Blacks turn: ")
         userInput = input("Please enter your move in the format a1a2 or enter commands to show all the commands:\n")
         if doCommands(userInput.lower(), True) != 2**31:
+            # If the undo command is executed update the moves
+            if doCommands(userInput.lower(), True) == 3:
+                # Whyever I need to use this line to privent me from getting a ton of warnings
+                moves = allPossibleMoves(chessboard, moveOfPlayer, True)
             doCommands(userInput.lower())
         elif isValidInput(userInput):
             convertedInput = convertInputToNumbers(userInput)
             if isPieceAtPos(convertedInput[0], chessboard):
                 if convertedInput in allMoves(chessboard, moveOfPlayer, True):
-                    possibleMoves = moves
-                    if convertedInput in possibleMoves:
+                    if convertedInput in allPossibleMoves(chessboard, moveOfPlayer, True):
                         break
                     else:
                         print("Move sets player in check, try again")
@@ -257,8 +268,10 @@ def showCommands():
                 elif i == 2:
                     print("\t\t\tExits the program, DOES QUIT YOUR MATCH! ")
                 elif i == 3:
-                    print("\t\t\tShows the current chessboard again. ")
+                    print("\t\t\tUndos the last move made")
                 elif i == 4:
+                    print("\t\t\tShows the current chessboard again. ")
+                elif i == 5:
                     print("\t\t\tClears the commandline")
             elif j == len(listOfCommands[i])-1:
                 print("\n")
@@ -386,9 +399,7 @@ def allPossibleMoves(chessboard, whiteOrBlack, asNumbers = False, withStartPosit
     '''
     Returns all moves that are currently possible, excluding the ones which set the king into check
     chessboard: the current wholeChessboard
-    whiteOrBlack: moves for which person
-    asNumbers: should the output be in numbers or in the human readable format (e2e4)
-    withStartPosition: should the output contain the Startposition of the pieces works only if asNumbers is True if asNumbers is False the start Positions will still be in the Output.
+    whiteOrBlack: moves for which person asNumbers: should the output be in numbers or in the human readable format (e2e4) withStartPosition: should the output contain the Startposition of the pieces works only if asNumbers is True if asNumbers is False the start Positions will still be in the Output.
     '''
     moves = allMoves(chessboard, whiteOrBlack, True, True)
     possibleMoves = []
@@ -456,20 +467,21 @@ def isCheckMate(moves):
     else:
         return False
 
-def checkIfPawnAtEnd(chessboard, whiteOrBlack):
+def checkIfPawnAtEnd():
     '''
     Checks if a pawn is at the end of the board, if this is the case
     this pawn gets replaced with a new piece chosen by the current player'''
-    if whiteOrBlack:
-        for i in range(len(chessboard[int(whiteOrBlack)][7])):
-            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][0][i]):
-                chessboard[int(whiteOrBlack)][0][i] = " "
-                chessboard[int(whiteOrBlack)][0][i] = getValidInputForNewEndPiece()(i, 0, True)
+    global chessboard
+    if moveOfPlayer:
+        for i in range(len(chessboard[1][0])):
+            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[1][0][i]):
+                chessboard[1][0][i] = " "
+                chessboard[1][0][i] = getValidInputForNewEndPiece()(i, 0, True)
     else:
-        for i in range(len(chessboard[int(whiteOrBlack)][7])):
-            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[int(whiteOrBlack)][7][i]):
-                chessboard[int(whiteOrBlack)][7][i] = " "
-                chessboard[int(whiteOrBlack)][7][i] = getValidInputForNewEndPiece()(i, 7, True)
+        for i in range(len(chessboard[0][7])):
+            if colorama.Fore.RED + "BP" + colorama.Style.RESET_ALL in str(chessboard[0][7][i]):
+                chessboard[0][7][i] = " "
+                chessboard[0][7][i] = getValidInputForNewEndPiece()(i, 7, False)
 
 def getValidInputForNewEndPiece():
     '''
@@ -491,6 +503,20 @@ def getValidInputForNewEndPiece():
         else:
             print("No valid piece, try again")
 
+def undoMoves(history, countOfMovesToUndo):
+    global chessboard
+    global moveOfPlayer
+    moveOfPlayer = True
+    whiteBoard = createWhiteSide()
+    blackBoard = createBlackSide()
+    chessboard = [blackBoard, whiteBoard]
+    for i in range(len(history)-countOfMovesToUndo):
+        playersMove = history[i]
+        chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
+        checkIfPawnAtEnd()
+        moveOfPlayer = not moveOfPlayer
+    printBoard(mergeBoards(chessboard))
+
 def gameOver():
     '''
     Prints the Game Over statement and exits the program
@@ -501,12 +527,15 @@ def gameOver():
         print("GameOver\nWhite won! GG")
     exit()
 
-#Create the two boards and merge them
+# Create the two boards and merge them
 whiteBoard = createWhiteSide()
 blackBoard = createBlackSide()
 chessboard = [blackBoard, whiteBoard]
 
-#print first board
+# Create the history array
+history = []
+
+# Print first board
 printBoard(mergeBoards(chessboard))
 
 while True:
@@ -517,7 +546,8 @@ while True:
     if isCheckMate(possibleMoves):
         gameOver()
     playersMove = getValidInput(possibleMoves)
+    history.append(playersMove)
     chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
-    checkIfPawnAtEnd(chessboard, moveOfPlayer)
+    checkIfPawnAtEnd()
     printBoard(mergeBoards(chessboard))
     moveOfPlayer = not moveOfPlayer
