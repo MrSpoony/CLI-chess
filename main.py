@@ -199,13 +199,13 @@ def doCommands(input, getIndex = False):
         return index
     else:
         if index == 0:
-            showCommands() 
+            showCommands()
         elif index == 1:
             printMoves(chessboard, moveOfPlayer)
         elif index == 2:
             printBoard(mergeBoards(chessboard))
         elif index == 3:
-            undoMoves(history, 1)
+            undoMoves(1)
         elif index == 4:
             exit()
         elif index == 5:
@@ -322,7 +322,6 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
     if yes it moves the King to it's new position, then the rook
     if no it checks which piece is moving and moves it
     '''
-
     # Check on both sides if the move is a rochade
     rochade = isTurnRochade(chessboard, False, coordinatesFrom, coordinatesTo)
     if not rochade:
@@ -467,21 +466,48 @@ def isCheckMate(moves):
     else:
         return False
 
-def checkIfPawnAtEnd():
+def checkIfPawnAtEnd(goingThroughHistory = False):
     '''
     Checks if a pawn is at the end of the board, if this is the case
     this pawn gets replaced with a new piece chosen by the current player'''
     global chessboard
-    if moveOfPlayer:
-        for i in range(len(chessboard[1][0])):
-            if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[1][0][i]):
-                chessboard[1][0][i] = " "
-                chessboard[1][0][i] = getValidInputForNewEndPiece()(i, 0, True)
+    global history
+    global historyPawnIndex
+    if not goingThroughHistory:
+        if moveOfPlayer:
+            for i in range(len(chessboard[1][0])):
+                if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[1][0][i]):
+                    newPieceInsteadOfPawn(True, i, 0)
+        else:
+            for i in range(len(chessboard[0][7])):
+                if colorama.Fore.RED + "BP" + colorama.Style.RESET_ALL in str(chessboard[0][7][i]):
+                    newPieceInsteadOfPawn(False, i, 7)
     else:
-        for i in range(len(chessboard[0][7])):
-            if colorama.Fore.RED + "BP" + colorama.Style.RESET_ALL in str(chessboard[0][7][i]):
-                chessboard[0][7][i] = " "
-                chessboard[0][7][i] = getValidInputForNewEndPiece()(i, 7, False)
+        if moveOfPlayer:
+            for i in range(len(chessboard[1][0])):
+                if colorama.Fore.BLUE + "WP" + colorama.Style.RESET_ALL in str(chessboard[1][0][i]):
+                    newPieceInsteadOfPawn(True, i, 0, True, historyPawnIndex)
+                    historyPawnIndex += 1
+        else:
+            for i in range(len(chessboard[0][7])):
+                if colorama.Fore.RED + "BP" + colorama.Style.RESET_ALL in str(chessboard[0][7][i]):
+                    newPieceInsteadOfPawn(False, i, 7, True, historyPawnIndex)
+                    historyPawnIndex += 1
+
+def newPieceInsteadOfPawn(whiteOrBlack, posX, posY, goingThroughHistory = False, historyPawnIndex = 0):
+    '''
+    Instances a new Piece intstead of the pawn at the posistion given'''
+    global chessboard
+    global history
+    if not goingThroughHistory:
+        chessboard[int(whiteOrBlack)][posY][posX] = " "
+        newPiece = getValidInputForNewEndPiece()
+        chessboard[int(whiteOrBlack)][posY][posX] = newPiece(posX, posY, whiteOrBlack)
+        history[1].append(newPiece)
+    else:
+        chessboard[int(whiteOrBlack)][posY][posX] = " "
+        newPiece = history[1][historyPawnIndex]
+        chessboard[int(whiteOrBlack)][posY][posX] = newPiece(posX, posY, whiteOrBlack)
 
 def getValidInputForNewEndPiece():
     '''
@@ -503,18 +529,22 @@ def getValidInputForNewEndPiece():
         else:
             print("No valid piece, try again")
 
-def undoMoves(history, countOfMovesToUndo):
+def undoMoves(countOfMovesToUndo):
     global chessboard
     global moveOfPlayer
+    global history
+    global historyPawnIndex
+    historyPawnIndex = 0
     moveOfPlayer = True
     whiteBoard = createWhiteSide()
     blackBoard = createBlackSide()
     chessboard = [blackBoard, whiteBoard]
-    for i in range(len(history)-countOfMovesToUndo):
-        playersMove = history[i]
+    for i in range(len(history[0])-countOfMovesToUndo):
+        playersMove = history[0][i]
         chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
-        checkIfPawnAtEnd()
+        checkIfPawnAtEnd(True)
         moveOfPlayer = not moveOfPlayer
+    history[0] = history[0][:-countOfMovesToUndo]
     printBoard(mergeBoards(chessboard))
 
 def gameOver():
@@ -533,7 +563,10 @@ blackBoard = createBlackSide()
 chessboard = [blackBoard, whiteBoard]
 
 # Create the history array
-history = []
+# First element stores all the moves
+# Second one stores the selected stuff from Pawn at the end
+history = [[], []]
+historyPawnIndex = 0
 
 # Print first board
 printBoard(mergeBoards(chessboard))
@@ -546,7 +579,7 @@ while True:
     if isCheckMate(possibleMoves):
         gameOver()
     playersMove = getValidInput(possibleMoves)
-    history.append(playersMove)
+    history[0].append(playersMove)
     chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
     checkIfPawnAtEnd()
     printBoard(mergeBoards(chessboard))
