@@ -1,5 +1,4 @@
 from King import King
-
 from Queen import Queen
 from Bishop import Bishop
 from Knight import Knight
@@ -35,9 +34,10 @@ import colorama
 moveOfPlayer = True  # True if its the turn of white and False if its blacks turn, because white starts its set to True
 listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
     ["commands", "command", "help", "--help", "man", "?"],
-    ["moves", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
+    ["moves", "move", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
     ["show", "showboard", "board", "chessboard", "printboard"],
     ["undo", "revoke"],
+    ["remis", "draw"],
     ["exit", "quit", ":wq", "leave", ":q", "q"],
     ["clear", "cls", "c"]]
 
@@ -207,10 +207,12 @@ def doCommands(input, getIndex = False):
         elif index == 3:
             undoMoves(1)
         elif index == 4:
-            exit()
+            askForRemis()
+            pass
         elif index == 5:
+            exit()
+        elif index == 6:
             clear()
-
 
 def getValidInput(moves):
     '''
@@ -259,6 +261,8 @@ def showCommands():
     print("Commands:\n")
     for i in range(len(listOfCommands)):
         for j in range(len(listOfCommands[i])):
+            if j != 0:
+                print("  ", end="", flush=True)
             print(listOfCommands[i][j], end="", flush=True)
             if j == 0:
                 if i == 0:
@@ -266,17 +270,19 @@ def showCommands():
                 elif i == 1:
                     print("\t\t\tShows all moves for the current active player. ")
                 elif i == 2:
-                    print("\t\t\tExits the program, DOES QUIT YOUR MATCH! ")
+                    print("\t\t\tExits the program, THIS QUITS YOUR MATCH WITHOUT ASKING AGAIN! ")
                 elif i == 3:
-                    print("\t\t\tUndos the last move made")
+                    print("\t\t\tUndos the last move made. ")
                 elif i == 4:
-                    print("\t\t\tShows the current chessboard again. ")
+                    print("\t\t\tAsks you and the player you're playing against to agree on a draw. ")
                 elif i == 5:
-                    print("\t\t\tClears the commandline")
+                    print("\t\t\tShows the current chessboard again. ")
+                elif i == 6:
+                    print("\t\t\tClears the commandline. ")
             elif j == len(listOfCommands[i])-1:
                 print("\n")
             else:
-                print() 
+                print()
 
 def convertInputToNumbers(userInput):
     '''
@@ -547,6 +553,28 @@ def undoMoves(countOfMovesToUndo):
     history[0] = history[0][:-countOfMovesToUndo]
     printBoard(mergeBoards(chessboard))
 
+def askForRemis():
+    clear()
+    if moveOfPlayer:
+        print("Do you (White Player) want to ask the Black Player to agree on a draw?\nIf yes please write 'Yes, I want a draw'")
+        inputOfPlayer = input()
+        if inputOfPlayer == "Yes, I want a draw":
+            print("\nDo you (Black Player) agree on the draw, the white Player asked for?\nIf you do so please write 'Yes, I agree on a draw'")
+            inputOfPlayer = input()
+            if inputOfPlayer == "Yes, I agree on a draw":
+                print("\nYou both agreed on a draw")
+                exit()
+    else:
+        print("Do you (Black Player) want to ask the Black Player to agree on a draw?\nIf yes please write 'Yes, I want a draw'")
+        inputOfPlayer = input()
+        if inputOfPlayer == "Yes, I want a draw":
+            print("\nDo you (White Player) agree on the draw, the white Player asked for?\nIf you do so please write 'Yes, I agree on a draw'")
+            inputOfPlayer = input()
+            if inputOfPlayer == "Yes, I agree on a draw":
+                print("\nYou both agreed on a draw")
+                exit()
+    print("\n\nAt least one of you didn't agree to the draw, the game will continue\n\n")
+
 def gameOver():
     '''
     Prints the Game Over statement and exits the program
@@ -576,8 +604,7 @@ while True:
     Main loop which gets called every turn
     '''
     possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
-    if isCheckMate(possibleMoves):
-        gameOver()
+    if isCheckMate(possibleMoves): gameOver()
     playersMove = getValidInput(possibleMoves)
     history[0].append(playersMove)
     chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
