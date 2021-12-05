@@ -22,7 +22,6 @@ Write commands to see all the available commands
 ### Definetly wanting to add
 
 * Remis
-* Undo moves
 
 ### What else I would like to add if I would have the time
 
@@ -38,3 +37,4 @@ Write commands to see all the available commands
 * not moving pieces when they set you in check
 * game ends when King is checkmated
 * rochade
+* Undo moves
