@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from King import King
 from Queen import Queen
 from Bishop import Bishop
@@ -54,30 +55,41 @@ def printBoard(chessboard):
     '''
 
     clear()
+    print("\n")
 
-    print("   ", end="", flush=True)
+    # Print the ABCD... at the top
+    print("      ", end="", flush=True)
     for i in range(len(chessboard)):
         print(chr((i+1) + 64), end="  ", flush=True)
 
+    # Print a line conisting of -------
     print()
-    print("  ", end="", flush=True)
+    print("     ", end="", flush=True)
     print("-"*(8*3+1), end="", flush=True)
 
     for i in range(len(chessboard)):
-        print(f"\n{9-(i+1)} ", end="|", flush=True)
+        # Print number on the left side
+        print(f"\n   {9-(i+1)} ", end="|", flush=True)
         for j in range(len(chessboard[i])):
             if chessboard[i][j] != " ":
+                # Print the piece itself
                 print(str(chessboard[i][j]), end="|", flush=True)
             else:
+                # Or two spaces if there is no piece
                 print("  ", end="|", flush=True)
             if len(chessboard)-1 == j:
-                print("\n", end="", flush=True)
-                print("  ", end="", flush=True)
+                # Print a line conisting of -------
+                print()
+                print("     ", end="", flush=True)
                 print("-"*(8*3+1), end="", flush=True)
+                # print("\n", end="", flush=True)
+                # print("  ", end="", flush=True)
+                # print("-"*(8*3+1), end="", flush=True)
 
     else:
+        # Print the ABCD... at the bottom
         print("\n", end="", flush=True)
-        print("   ", end="", flush=True)
+        print("      ", end="", flush=True)
         for i in range(len(chessboard)):
             print(chr((i+1) + 64), end="  ", flush=True)
         else:
