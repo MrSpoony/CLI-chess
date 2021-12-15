@@ -19,8 +19,7 @@ Write commands to see all the available commands
 
 ## TODO
 
-### Definetly wanting to add
-
+### Easy stuff to add
 
 ### What else I would like to add if I would have the time
 
@@ -38,3 +37,4 @@ Write commands to see all the available commands
 * rochade
 * Undo moves
 * Remis/Draw
+* Fixed some bugs
