@@ -7,12 +7,14 @@ from Pawn import Pawn
 from Rook import Rook
 from copy import deepcopy
 from os import system, name
+from art import tprint
 import colorama
 
 # Import all the pieces
 # To copy without problems import copy.deepcopy
 # To clear the commandline import os.system
 # To know which system you're on import os.name
+# For a nice ending screen there is Tprint from art importet
 # For nice colors import colorama
 
 
@@ -586,10 +588,11 @@ def gameOver():
     '''
     Prints the Game Over statement and exits the program
     '''
+    tprint("GameOver")
     if moveOfPlayer:
-        print("GameOver\nBlack won! GG")
+        print("Black won! GG")
     else:
-        print("GameOver\nWhite won! GG")
+        print("White won! GG")
     print()
     userInput = input("Do you want to play again? [Y/n]").lower()
     if userInput == "y" or userInput == "" or userInput == "yes":
@@ -622,7 +625,6 @@ def main():
         checkIfPawnAtEnd()
         printBoard(mergeBoards(chessboard))
         moveOfPlayer = not moveOfPlayer
-
 
 
 if __name__ == "__main__":
