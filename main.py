@@ -34,13 +34,22 @@ import colorama
 
 moveOfPlayer = True  # True if its the turn of white and False if its blacks turn, because white starts its set to True
 listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
-    ["commands", "command", "help", "--help", "man", "?"],
-    ["moves", "move", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
-    ["show", "showboard", "board", "chessboard", "printboard"],
-    ["undo", "revoke"],
-    ["remis", "draw"],
-    ["exit", "quit", ":wq", "leave", ":q", "q"],
-    ["clear", "cls", "c"]]
+    ["commands", "\t\tPrints this table again. ", "command", "help", "--help", "man", "?"],
+    ["moves", "\t\t\tShows all moves for the current active player. ", "move", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
+    ["show", "\t\t\tExits the program, THIS QUITS YOUR MATCH WITHOUT ASKING AGAIN! ", "showboard", "board", "chessboard", "printboard"],
+    ["undo", "\t\t\tUndos the last move made. ", "revoke"],
+    ["remis", "\t\t\tAsks you and the player you're playing against to agree on a draw. ", "draw"],
+    ["exit", "\t\t\tShows the current chessboard again. ", "quit", ":wq", "leave", ":q", "q"],
+    ["clear", "\t\t\tClears the commandline. ", "cls", "c"]]
+
+# Create the history array
+# First element stores all the moves
+# Second one stores the selected stuff from Pawn at the end
+history = [[], []]
+historyPawnIndex = 0
+
+
+
 
 def clear():
     if name == 'nt':
@@ -242,13 +251,13 @@ def getValidInput(moves):
             print("Whites turn: ")
         else:
             print("Blacks turn: ")
-        userInput = input("Please enter your move in the format a1a2 or enter commands to show all the commands:\n")
-        if doCommands(userInput.lower(), True) != 2**31:
+        userInput = input("Please enter your move in the format 'a1a2' or enter 'commands' to show all the commands:\n").lower()
+        if doCommands(userInput, True) != 2**31:
             # If the undo command is executed update the moves
-            if doCommands(userInput.lower(), True) == 3:
+            if doCommands(userInput, True) == 3:
                 # Whyever I need to use this line to privent me from getting a ton of warnings
                 moves = allPossibleMoves(chessboard, moveOfPlayer, True)
-            doCommands(userInput.lower())
+            doCommands(userInput)
         elif isValidInput(userInput):
             convertedInput = convertInputToNumbers(userInput)
             if isPieceAtPos(convertedInput[0], chessboard):
@@ -273,27 +282,13 @@ def showCommands():
     print("Commands:\n")
     for i in range(len(listOfCommands)):
         for j in range(len(listOfCommands[i])):
-            if j != 0:
+            if j > 1:
                 print("  ", end="", flush=True)
-            print(listOfCommands[i][j], end="", flush=True)
+                print(listOfCommands[i][j], end="\n", flush=True)
             if j == 0:
-                if i == 0:
-                    print("\t\tPrints this table again. ")
-                elif i == 1:
-                    print("\t\t\tShows all moves for the current active player. ")
-                elif i == 2:
-                    print("\t\t\tExits the program, THIS QUITS YOUR MATCH WITHOUT ASKING AGAIN! ")
-                elif i == 3:
-                    print("\t\t\tUndos the last move made. ")
-                elif i == 4:
-                    print("\t\t\tAsks you and the player you're playing against to agree on a draw. ")
-                elif i == 5:
-                    print("\t\t\tShows the current chessboard again. ")
-                elif i == 6:
-                    print("\t\t\tClears the commandline. ")
-            elif j == len(listOfCommands[i])-1:
-                print("\n")
-            else:
+                print(listOfCommands[i][j], end="", flush=True)
+                print(listOfCommands[i][1])
+            if j == len(listOfCommands[i])-1:
                 print()
 
 def convertInputToNumbers(userInput):
@@ -358,7 +353,7 @@ def movePiece(coordinatesFrom, coordinatesTo, chessboard):
             if rochade[0]:
                 chessboard = swapPieces(chessboard, 1, 7, 7, 5, 7)
             else:
-                chessboard = swapPieces(chessboard, 0, 0, 7, 5, 0)
+                chessboard = swapPieces(chessboard, 0, 7, 0, 5, 0)
     else:
         if chessboard[0][coordinatesFrom[1]][coordinatesFrom[0]] != " ":
             chessboard = swapPieces(chessboard, 0, coordinatesFrom[0], coordinatesFrom[1], coordinatesTo[0], coordinatesTo[1])
@@ -595,31 +590,40 @@ def gameOver():
         print("GameOver\nBlack won! GG")
     else:
         print("GameOver\nWhite won! GG")
-    exit()
+    print()
+    userInput = input("Do you want to play again? [Y/n]").lower()
+    if userInput == "y" or userInput == "" or userInput == "yes":
+        main()
+    else:
+        exit()
 
-# Create the two boards and merge them
-whiteBoard = createWhiteSide()
-blackBoard = createBlackSide()
-chessboard = [blackBoard, whiteBoard]
+def main():
+    global moveOfPlayer
+    global history
+    global chessboard
+    # Create the two boards and merge them
+    whiteBoard = createWhiteSide()
+    blackBoard = createBlackSide()
+    chessboard = [blackBoard, whiteBoard]
 
-# Create the history array
-# First element stores all the moves
-# Second one stores the selected stuff from Pawn at the end
-history = [[], []]
-historyPawnIndex = 0
 
-# Print first board
-printBoard(mergeBoards(chessboard))
-
-while True:
-    '''
-    Main loop which gets called every turn
-    '''
-    possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
-    if isCheckMate(possibleMoves): gameOver()
-    playersMove = getValidInput(possibleMoves)
-    history[0].append(playersMove)
-    chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
-    checkIfPawnAtEnd()
+    # Print first board
     printBoard(mergeBoards(chessboard))
-    moveOfPlayer = not moveOfPlayer
+
+    while True:
+        '''
+        Main loop which gets called every turn
+        '''
+        possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
+        if isCheckMate(possibleMoves): gameOver()
+        playersMove = getValidInput(possibleMoves)
+        history[0].append(playersMove)
+        chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
+        checkIfPawnAtEnd()
+        printBoard(mergeBoards(chessboard))
+        moveOfPlayer = not moveOfPlayer
+
+
+
+if __name__ == "__main__":
+    main()
