@@ -38,10 +38,10 @@ moveOfPlayer = True  # True if its the turn of white and False if its blacks tur
 listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
     ["commands", "\t\tPrints this table again. ", "command", "help", "--help", "man", "?"],
     ["moves", "\t\t\tShows all moves for the current active player. ", "move", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
-    ["show", "\t\t\tExits the program, THIS QUITS YOUR MATCH WITHOUT ASKING AGAIN! ", "showboard", "board", "chessboard", "printboard"],
+    ["show", "\t\t\tShows the current chessboard again. ", "showboard", "board", "chessboard", "printboard"],
     ["undo", "\t\t\tUndos the last move made. ", "revoke"],
     ["remis", "\t\t\tAsks you and the player you're playing against to agree on a draw. ", "draw"],
-    ["exit", "\t\t\tShows the current chessboard again. ", "quit", ":wq", "leave", ":q", "q"],
+    ["exit", "\t\t\tExits the program, THIS QUITS YOUR MATCH WITHOUT ASKING AGAIN! ", "quit", ":wq", "leave", ":q", "q"],
     ["clear", "\t\t\tClears the commandline. ", "cls", "c"]]
 
 # Create the history array
