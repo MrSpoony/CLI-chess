@@ -38,7 +38,7 @@ moveOfPlayer = True  # True if its the turn of white and False if its blacks tur
 listOfCommands = [   # list which includes all commands so that expanding is easier later each [i] is a further array with all the commands which have the same purpose 
     ["commands", "\t\tPrints this table again. ", "command", "help", "--help", "man", "?"],
     ["moves", "\t\t\tShows all moves for the current active player. ", "move", "possiblemoves", "turns", "possibleturns", "listmoves", "printmoves", "showmoves", "list", "lsmoves", "ls", "ll"],
-    ["show", "\t\t\tShows the current chessboard again. ", "showboard", "board", "chessboard", "printboard"],
+    ["show", "\t\t\tShows the current chessboard again. Exits the program, THIS QUITS YOUR MATCH WITHOUT ASKING AGAIN! ", "showboard", "board", "chessboard", "printboard"],
     ["undo", "\t\t\tUndos the last move made. ", "revoke"],
     ["remis", "\t\t\tAsks you and the player you're playing against to agree on a draw. ", "draw"],
     ["exit", "\t\t\tExits the program, THIS QUITS YOUR MATCH WITHOUT ASKING AGAIN! ", "quit", ":wq", "leave", ":q", "q"],
@@ -49,7 +49,6 @@ listOfCommands = [   # list which includes all commands so that expanding is eas
 # Second one stores the selected stuff from Pawn at the end
 history = [[], []]
 historyPawnIndex = 0
-
 
 
 
@@ -64,7 +63,6 @@ def printBoard(chessboard):
     Clears the commandline,
     prints the chessboard that gets inputed and adds the seperators and the ABC and 123 indicators
     '''
-
     clear()
     print("\n")
 
@@ -93,10 +91,6 @@ def printBoard(chessboard):
                 print()
                 print("     ", end="", flush=True)
                 print("-"*(8*3+1), end="", flush=True)
-                # print("\n", end="", flush=True)
-                # print("  ", end="", flush=True)
-                # print("-"*(8*3+1), end="", flush=True)
-
     else:
         # Print the ABCD... at the bottom
         print("\n", end="", flush=True)
