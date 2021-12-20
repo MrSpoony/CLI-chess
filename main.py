@@ -8,6 +8,7 @@ from Rook import Rook
 from copy import deepcopy
 from os import system, name
 from art import tprint
+from random import choice
 import colorama
 
 # Import all the pieces
@@ -594,6 +595,15 @@ def gameOver():
     else:
         exit()
 
+
+def kiOrNoKi():
+    playerInput = input("Willst du gegen deinen Kollegen spielen? [Y/n]").lower()
+    if not (playerInput == "y" or playerInput == "yes" or playerInput == ""):
+        return False
+    else:
+        return True
+
+
 def main():
     global moveOfPlayer
     global history
@@ -606,19 +616,36 @@ def main():
 
     # Print first board
     printBoard(mergeBoards(chessboard))
+    if kiOrNoKi():
+        while True:
+            '''
+            Main loop which gets called every turn
+            '''
+            possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
+            if isCheckMate(possibleMoves): gameOver()
+            playersMove = getValidInput(possibleMoves)
+            history[0].append(playersMove)
+            chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
+            checkIfPawnAtEnd()
+            printBoard(mergeBoards(chessboard))
+            moveOfPlayer = not moveOfPlayer
+    else:
+        while True:
+            '''
+            Main loop which gets called every turn
+            '''
+            possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
+            if isCheckMate(possibleMoves): gameOver()
+            if not moveOfPlayer:
+                playersMove = convertInputToNumbers(choice(allPossibleMoves(chessboard, moveOfPlayer, False, True)))
+            else:
+                playersMove = getValidInput(possibleMoves)
+            history[0].append(playersMove)
+            chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
+            checkIfPawnAtEnd()
+            printBoard(mergeBoards(chessboard))
+            moveOfPlayer = not moveOfPlayer
 
-    while True:
-        '''
-        Main loop which gets called every turn
-        '''
-        possibleMoves = allPossibleMoves(chessboard, moveOfPlayer, True)
-        if isCheckMate(possibleMoves): gameOver()
-        playersMove = getValidInput(possibleMoves)
-        history[0].append(playersMove)
-        chessboard = movePiece(playersMove[0], playersMove[1], chessboard)
-        checkIfPawnAtEnd()
-        printBoard(mergeBoards(chessboard))
-        moveOfPlayer = not moveOfPlayer
 
 
 if __name__ == "__main__":
