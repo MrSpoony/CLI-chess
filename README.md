@@ -4,9 +4,10 @@ Little chess game you can play in your console
 
 ## How to start
 
-Clone the repository and execute the main.py file with python3
+Clone the repository install the necessary packages with pip and execute the main.py file with python3
 
 ```bash
+pip install -r ./requirements.txt
 python3 main.py
 ```
 
