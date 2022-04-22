@@ -2,6 +2,9 @@
 
 Little chess game you can play in your console
 
+This was one of my first projects so my codingstyle is very bad,
+I changed it since (at least I think so...)
+
 ## How to start
 
 Clone the repository install the necessary packages with pip and execute the main.py file with python3
